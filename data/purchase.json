@@ -1,0 +1,114 @@
+{
+  "requests": [
+    {
+      "request_id": "7c21e78f-7529-4fff-bae7-ae53ad547310",
+      "user": "Akshat111",
+      "retailer": "Akshat11",
+      "item_id": "297b3369-ae5e-4e1a-b5c4-e52f6d26bdad",
+      "status": "requested",
+      "created_at": "2025-08-15T08:01:25Z",
+      "updated_at": "2025-08-15T08:01:25Z"
+    },
+    {
+      "request_id": "0752a8f0-4abd-4696-ab8d-dbcf61c98ab3",
+      "user": "Akshat111",
+      "retailer": "Akshat11",
+      "item_id": "fd76bf79-b946-4774-b784-24b9ce59cef1",
+      "status": "requested",
+      "created_at": "2025-08-15T08:35:45Z",
+      "updated_at": "2025-08-15T08:35:45Z"
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "2943e7ea-650b-4a10-9d41-8523ed8dcd95",
+      "user": "Akshat111",
+      "items": [
+        {
+          "item_id": "fd76bf79-b946-4774-b784-24b9ce59cef1",
+          "retailer": "Akshat11",
+          "price": 4500.0
+        },
+        {
+          "item_id": "297b3369-ae5e-4e1a-b5c4-e52f6d26bdad",
+          "retailer": "Akshat11",
+          "price": 4500.0
+        }
+      ],
+      "contact": {
+        "name": "AKSHAT GUPTA",
+        "phone": "9105211531",
+        "email": "akshumtr@gmail.com",
+        "address": "a-110 laxmi nagar"
+      },
+      "status": "pending_payment",
+      "total_amount": 9000.0,
+      "created_at": "2025-08-16T04:38:16Z"
+    },
+    {
+      "order_id": "7219e67b-fb0c-433a-8c84-aa871fb52053",
+      "user": "Akshat111",
+      "items": [
+        {
+          "item_id": "5015a22e-04c4-4216-a22a-8d93b423c57d",
+          "retailer": "Akshat11",
+          "price": 24.0
+        }
+      ],
+      "contact": {
+        "name": "AKSHAT GUPTA",
+        "phone": "sadFE",
+        "email": "akshat.gupta_cs.aiml24@gla.ac.in",
+        "address": "hghgds"
+      },
+      "status": "pending_payment",
+      "total_amount": 24.0,
+      "created_at": "2025-08-16T04:40:48Z"
+    },
+    {
+      "order_id": "c4f1a152-db12-46b1-bb49-e39337439187",
+      "user": "Akshat111",
+      "items": [
+        {
+          "item_id": "5015a22e-04c4-4216-a22a-8d93b423c57d",
+          "retailer": "Akshat11",
+          "price": 24.0
+        },
+        {
+          "item_id": "fd76bf79-b946-4774-b784-24b9ce59cef1",
+          "retailer": "Akshat11",
+          "price": 45.0
+        }
+      ],
+      "contact": {
+        "name": "AKSHAT GUPTA",
+        "phone": "9105211531",
+        "email": "examp@gmail.com",
+        "address": "tgeg"
+      },
+      "status": "pending_payment",
+      "total_amount": 69.0,
+      "created_at": "2025-08-16T04:57:17Z"
+    },
+    {
+      "order_id": "d06e0de6-8b20-4a86-92d0-4baa585fdd9c",
+      "user": "Akshat111",
+      "items": [
+        {
+          "item_id": "fd76bf79-b946-4774-b784-24b9ce59cef1",
+          "retailer": "Akshat11",
+          "price": 45.0
+        }
+      ],
+      "contact": {
+        "name": "KHUSHI SARASWAT",
+        "phone": "9105211531",
+        "email": "akshat.gupta_cs.aiml24@gla.ac.in",
+        "address": "rerer"
+      },
+      "status": "pending_payment",
+      "total_amount": 45.0,
+      "created_at": "2025-08-16T05:01:06Z"
+    }
+  ]
+}

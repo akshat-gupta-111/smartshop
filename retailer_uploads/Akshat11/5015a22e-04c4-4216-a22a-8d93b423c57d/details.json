@@ -1,0 +1,17 @@
+{
+  "item_id": "5015a22e-04c4-4216-a22a-8d93b423c57d",
+  "retailer": "Akshat11",
+  "name": "none",
+  "category": "tech",
+  "description_full": "hehe",
+  "description_short": "hehe",
+  "image_filename": "5015a22e-04c4-4216-a22a-8d93b423c57d.jpg",
+  "price": 24.0,
+  "stock": 4,
+  "tags": [
+    "good",
+    "bad"
+  ],
+  "created_at": "2025-08-16T04:40:29Z",
+  "updated_at": "2025-08-16T04:57:59Z"
+}

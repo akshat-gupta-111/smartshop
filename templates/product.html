@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="product-detail">
+  <div class="image-col">
+    <img src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}" alt="{{ item.name }}">
+  </div>
+  <div class="info-col">
+    <h2>{{ item.name }}</h2>
+    <p><strong>Retailer:</strong> {{ item.retailer }}</p>
+    <p><strong>Category:</strong> {{ item.category }}</p>
+    <p><strong>Price:</strong> ${{ "%.2f"|format(item.price) }}</p>
+    <p><strong>Stock:</strong> {{ item.stock }}</p>
+    <p>{{ item.description_full }}</p>
+    {% if session.get('role') == 'user' %}
+      <div class="actions">
+        <a class="btn primary" href="{{ url_for('order_page', retailer=item.retailer, item_id=item.item_id) }}">Buy Now</a>
+        {% if in_cart %}
+          <button id="removeFromCartBtn" class="btn secondary">Remove from Cart</button>
+        {% else %}
+          <button id="addToCartBtn" class="btn secondary">Add to Cart</button>
+        {% endif %}
+      </div>
+      <div id="cartActionStatus"></div>
+      <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+      <script>
+        setupProductCartButtons("{{ item.item_id }}","{{ item.retailer }}", {{ 'true' if in_cart else 'false' }});
+      </script>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

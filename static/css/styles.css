@@ -1,0 +1,321 @@
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#f6f7f9;
+  color:#222;
+}
+.nav {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0.75rem 1rem;
+  background:#222;
+  color:#fff;
+}
+.nav a { color:#fff; margin-left:1rem; text-decoration:none; }
+.content { padding:1rem; }
+.auth-container, .upload-form { background:#fff; padding:1rem; border-radius:6px; max-width:400px; }
+.error { background:#fdd; padding:0.5rem; margin:0.5rem 0; border:1px solid #f99; }
+
+.layout-app {
+  display:grid;
+  grid-template-columns:70% 30%;
+  grid-template-rows:70vh 30vh auto;
+  gap:1rem;
+  grid-template-areas:
+    "div1 div2"
+    "div1 div3"
+    "div4 div4";
+}
+#div1 { grid-area:div1; overflow:auto; }
+#div2 { grid-area:div2; display:flex; flex-direction:column; }
+#div3 { grid-area:div3; overflow:auto; }
+#div4 { grid-area:div4; }
+
+.panel {
+  background:#fff;
+  padding:0.75rem;
+  border-radius:6px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.08);
+}
+
+.product-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:0.75rem;
+}
+.product-card {
+  background:#fafafa;
+  border:1px solid #eee;
+  padding:0.5rem;
+  border-radius:6px;
+  display:flex;
+  flex-direction:column;
+}
+.product-card img {
+  width:100%;
+  height:120px;
+  object-fit:cover;
+  border-radius:4px;
+}
+.product-card h4 { margin:0.5rem 0 0.25rem; font-size:1rem; }
+.product-card .meta { font-size:0.7rem; color:#666; margin:0; }
+.btn.small {
+  background:#007bff;
+  color:#fff;
+  padding:0.4rem 0.6rem;
+  border:none;
+  border-radius:4px;
+  text-align:center;
+  text-decoration:none;
+  font-size:0.75rem;
+  margin-top:auto;
+}
+
+.chat-wrapper {
+  display:flex;
+  flex-direction:column;
+  height:100%;
+}
+.chat-messages {
+  flex:1;
+  border:1px solid #ddd;
+  background:#fafafa;
+  padding:0.5rem;
+  overflow:auto;
+  font-size:0.85rem;
+  border-radius:4px;
+}
+.chat-message {
+  margin-bottom:0.6rem;
+  line-height:1.2rem;
+}
+.chat-message.assistant { color:#1a4d8f; }
+.chat-message.user { color:#333; }
+.chat-controls {
+  margin-top:0.5rem;
+  display:flex;
+  flex-direction:column;
+}
+.chat-controls textarea {
+  resize:none;
+  height:60px;
+  padding:0.5rem;
+}
+.chat-buttons {
+  display:flex;
+  gap:0.5rem;
+  margin-top:0.5rem;
+}
+
+.rating-popup {
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#fff;
+  border:1px solid #ccc;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  padding:1rem;
+  border-radius:8px;
+  z-index:1000;
+  width:220px;
+}
+.rating-popup.hidden { display:none; }
+.rating-buttons button {
+  margin:0.25rem;
+  flex:1;
+}
+.close-btn {
+  width:100%;
+  margin-top:0.5rem;
+  background:#444;
+  color:#fff;
+  border:none;
+  border-radius:4px;
+  padding:0.4rem;
+}
+
+.faq-ask textarea {
+  width:100%;
+  min-height:60px;
+  resize:vertical;
+}
+.faq-ask button {
+  margin-top:0.5rem;
+}
+
+.retailer-layout {
+  display:flex;
+  gap:1rem;
+}
+.retailer-left { flex:2; }
+.retailer-right { flex:1; background:#fff; padding:0.75rem; border-radius:6px; }
+
+.product-detail {
+  display:flex;
+  gap:1rem;
+}
+.product-detail .image-col img {
+  max-width:360px;
+  border-radius:8px;
+}
+.product-detail .info-col { flex:1; }
+
+@media(max-width:1000px) {
+  .layout-app {
+    display:flex;
+    flex-direction:column;
+  }
+  #div1, #div2, #div3, #div4 {
+    height:auto;
+  }
+  .retailer-layout { flex-direction:column; }
+  .product-detail { flex-direction:column; }
+}
+
+/* --- Additions for Cart & Order --- */
+.product-detail .actions {
+  display:flex;
+  gap:0.5rem;
+  margin-top:0.75rem;
+}
+.btn.primary {
+  background:#007bff;
+  color:#fff;
+  border:none;
+  padding:0.55rem 0.9rem;
+  border-radius:4px;
+  cursor:pointer;
+  text-decoration:none;
+  display:inline-block;
+}
+.btn.secondary {
+  background:#555;
+  color:#fff;
+  border:none;
+  padding:0.5rem 0.8rem;
+  border-radius:4px;
+  cursor:pointer;
+}
+.btn.primary:disabled, .btn.secondary:disabled {
+  opacity:0.6; cursor:not-allowed;
+}
+.cart-page, .order-page {
+  background:#fff;
+  padding:1rem;
+  border-radius:6px;
+  max-width:900px;
+  margin:0 auto;
+}
+.cart-table {
+  width:100%;
+  border-collapse:collapse;
+  margin-bottom:0.75rem;
+}
+.cart-table th, .cart-table td {
+  border:1px solid #ddd;
+  padding:0.5rem;
+  font-size:0.85rem;
+}
+.cart-table th {
+  background:#f1f1f1;
+}
+.cart-actions {
+  display:flex;
+  gap:0.75rem;
+}
+.order-page {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1rem;
+}
+.order-items ul {
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+.order-items li {
+  display:flex;
+  gap:0.5rem;
+  border:1px solid #eee;
+  background:#fafafa;
+  margin-bottom:0.5rem;
+  padding:0.4rem;
+  border-radius:4px;
+}
+.order-items li img {
+  width:60px;
+  height:60px;
+  object-fit:cover;
+  border-radius:4px;
+}
+.order-items .total {
+  font-weight:600;
+  margin-top:0.5rem;
+}
+.order-form form {
+  display:flex;
+  flex-direction:column;
+  gap:0.5rem;
+}
+.order-form textarea {
+  min-height:80px;
+  resize:vertical;
+}
+.payment-section {
+  grid-column:1 / -1;
+  background:#f9f9ff;
+  border:1px solid #dce;
+  padding:0.75rem;
+  border-radius:6px;
+}
+.payment-section.hidden {
+  display:none;
+}
+.payment-actions {
+  display:flex;
+  gap:0.5rem;
+  margin-bottom:0.5rem;
+}
+#qrContainer img {
+  border:1px solid #ccc;
+  padding:4px;
+  background:#fff;
+  border-radius:4px;
+}
+@media(max-width:900px){
+  .order-page {
+    grid-template-columns:1fr;
+  }
+}
+.product-card .actions-row {
+  display:flex;
+  gap:0.4rem;
+  margin-top:0.4rem;
+  flex-wrap:wrap;
+}
+.product-card .edit-form {
+  margin-top:0.5rem;
+  border-top:1px solid #eee;
+  padding-top:0.5rem;
+  display:flex;
+  flex-direction:column;
+  gap:0.4rem;
+}
+.product-card .edit-form.hidden { display:none; }
+.product-card .edit-form textarea {
+  min-height:70px;
+  resize:vertical;
+}
+.product-card .edit-actions {
+  display:flex;
+  gap:0.4rem;
+}
+.btn.small.danger {
+  background:#c62828;
+  color:#fff;
+}
+.edit-status {
+  font-size:0.7rem;
+  color:#555;
+}

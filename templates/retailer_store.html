@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="retailer-layout">
+  <div class="retailer-left">
+    <h2>Your Products</h2>
+    <form id="uploadForm" class="upload-form">
+      <input type="text" name="name" placeholder="Name" required />
+      <select name="category">
+        <option value="tech">Tech</option>
+        <option value="clothing">Clothing</option>
+        <option value="furniture">Furniture</option>
+        <option value="other">Other</option>
+      </select>
+      <textarea name="description" placeholder="Description" required></textarea>
+      <input type="text" name="price" placeholder="Price" />
+      <input type="number" name="stock" placeholder="Stock" />
+      <input type="text" name="tags" placeholder="Tags (comma separated)" />
+      <input type="file" name="image" required />
+      <button type="submit">Upload</button>
+      <div id="uploadStatus"></div>
+    </form>
+
+    <div class="product-grid" id="retailerProducts">
+      {% for item in items %}
+      <div class="product-card" data-item-id="{{ item.item_id }}">
+        <img src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}" alt="{{ item.name }}">
+        <h4>{{ item.name }}</h4>
+        <p class="meta">{{ item.category }} | ${{ "%.2f"|format(item.price) }} | Stock: {{ item.stock }}</p>
+        <p>{{ item.description_short }}</p>
+        <div class="actions-row">
+          <a class="btn small" href="{{ url_for('product_page', retailer=item.retailer, item_id=item.item_id) }}">View</a>
+          <button class="btn small edit-btn" data-id="{{ item.item_id }}">Edit</button>
+          <button class="btn small danger delete-btn" data-id="{{ item.item_id }}">Delete</button>
+        </div>
+        <form class="edit-form hidden" data-id="{{ item.item_id }}">
+          <input type="text" name="name" value="{{ item.name }}" required />
+            <select name="category">
+              <option value="tech" {% if item.category=='tech' %}selected{% endif %}>Tech</option>
+              <option value="clothing" {% if item.category=='clothing' %}selected{% endif %}>Clothing</option>
+              <option value="furniture" {% if item.category=='furniture' %}selected{% endif %}>Furniture</option>
+              <option value="other" {% if item.category=='other' %}selected{% endif %}>Other</option>
+            </select>
+            <textarea name="description" required>{{ item.description_full }}</textarea>
+            <input type="text" name="price" value="{{ item.price }}" />
+            <input type="number" name="stock" value="{{ item.stock }}" />
+            <input type="text" name="tags" value="{{ item.tags | join(', ') }}" />
+            <div class="edit-actions">
+              <button type="submit" class="btn small">Save</button>
+              <button type="button" class="btn small cancel-edit" data-id="{{ item.item_id }}">Cancel</button>
+            </div>
+            <div class="edit-status" data-status-for="{{ item.item_id }}"></div>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="retailer-right">
+    <section class="faq-section">
+      {% include "partials/_faq_section.html" %}
+    </section>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/faq.js') }}"></script>
+<script src="{{ url_for('static', filename='js/retailer_manage.js') }}"></script>
+<script>
+document.getElementById('uploadForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const form = e.target;
+  const fd = new FormData(form);
+  const res = await fetch("{{ url_for('upload_product') }}", {
+    method: 'POST',
+    body: fd
+  });
+  const data = await res.json();
+  const status = document.getElementById('uploadStatus');
+  if(data.ok){
+    status.textContent = "Uploaded successfully. Reloading...";
+    setTimeout(()=>location.reload(), 800);
+  } else {
+    status.textContent = data.error || "Upload failed.";
+  }
+});
+</script>
+{% endblock %}

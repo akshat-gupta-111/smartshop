@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="cart-page">
+  <h2>Your Cart</h2>
+  {% if items %}
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Item</th><th>Retailer</th><th>Category</th><th>Price</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for it in items %}
+        <tr data-item="{{ it.item_id }}" data-retailer="{{ it.retailer }}">
+          <td><a href="{{ url_for('product_page', retailer=it.retailer, item_id=it.item_id) }}">{{ it.name }}</a></td>
+            <td>{{ it.retailer }}</td>
+            <td>{{ it.category }}</td>
+            <td>${{ "%.2f"|format(it.price) }}</td>
+            <td><button class="remove-btn" data-item="{{ it.item_id }}" data-retailer="{{ it.retailer }}">Remove</button></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="total">Total: ${{ "%.2f"|format(total) }}</p>
+    <div class="cart-actions">
+      <a class="btn primary" href="{{ url_for('cart_checkout') }}">Buy All</a>
+      <button id="clearCartBtn" class="btn secondary">Clear Cart</button>
+    </div>
+  {% else %}
+    <p>Your cart is empty.</p>
+  {% endif %}
+</div>
+<script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+<script>
+  setupCartPage();
+</script>
+{% endblock %}

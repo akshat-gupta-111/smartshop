@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="order-page">
+  <h2>Place Order</h2>
+  <div class="order-items">
+    <h3>Items</h3>
+    <ul>
+      {% for it in items %}
+        <li>
+          <img src="{{ url_for('serve_image', retailer=it.retailer, item_id=it.item_id, filename=it.image_filename) }}" alt="{{ it.name }}">
+          <div class="info">
+            <strong>{{ it.name }}</strong><br>
+            {{ it.category }} - ${{ "%.2f"|format(it.price) }} ({{ it.retailer }})
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+    <p class="total">Total: ${{ "%.2f"|format(total) }}</p>
+  </div>
+  <div class="order-form">
+    <h3>Your Details</h3>
+    <form id="orderForm">
+      <input type="text" name="name" placeholder="Full Name" required>
+      <input type="text" name="phone" placeholder="Phone Number" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <textarea name="address" placeholder="Address" required></textarea>
+      <input type="hidden" name="mode" value="{{ mode }}">
+      {% if mode == 'single' %}
+        <input type="hidden" name="item_id" value="{{ items[0].item_id }}">
+        <input type="hidden" name="retailer" value="{{ items[0].retailer }}">
+      {% endif %}
+      <button type="submit" class="btn primary">Create Order</button>
+    </form>
+    <div id="orderStatus"></div>
+  </div>
+  <div id="paymentSection" class="payment-section hidden">
+    <h3>Payment</h3>
+    <p>Click "Generate QR" to get UPI QR code. Then click "Verify Payment" (placeholder only).</p>
+    <div class="payment-actions">
+      <button id="generateQrBtn" class="btn secondary">Generate QR</button>
+      <button id="verifyPaymentBtn" class="btn secondary" disabled>Verify Payment</button>
+    </div>
+    <div id="qrContainer"></div>
+    <div id="verifyStatus"></div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/order.js') }}"></script>
+<script>
+  initOrderPage("{{ mode }}");
+</script>
+{% endblock %}

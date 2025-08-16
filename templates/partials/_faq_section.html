@@ -1,0 +1,11 @@
+<h3>FAQ</h3>
+<ul id="faqList">
+  {% for faq in faqs %}
+  <li><strong>{{ faq.q }}</strong><br>{{ faq.a }}</li>
+  {% endfor %}
+</ul>
+<div class="faq-ask">
+  <textarea id="faqQuestion" placeholder="Ask a platform question..."></textarea>
+  <button id="faqAskBtn">Ask</button>
+  <div id="faqAnswer"></div>
+</div>

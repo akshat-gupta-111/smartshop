@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-container">
+  <h2>Register</h2>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <form method="POST">
+    <input type="text" name="username" placeholder="Username" required />
+    <input type="password" name="password" placeholder="Password" required />
+    <div>
+      <label><input type="radio" name="role" value="user" checked /> User</label>
+      <label><input type="radio" name="role" value="retailer" /> Retailer</label>
+    </div>
+    <button type="submit">Create Account</button>
+  </form>
+</div>
+{% endblock %}

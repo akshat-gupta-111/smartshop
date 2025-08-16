@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ title if title else "Smart E-Commerce" }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+<nav class="nav">
+  <div class="logo"><a href="{{ url_for('home') }}" style="color:#fff;text-decoration:none;">SmartShop</a></div>
+  <div class="nav-links">
+    {% if session.get('username') %}
+      {% if session.get('role') == 'user' %}
+        <a href="{{ url_for('user_app') }}">Home</a>
+        <a href="{{ url_for('cart_page') }}">Cart  <!-- {% if cart_count and cart_count >= 0 %} ({{ cart_count }}){% endif %} --></a>
+      {% elif session.get('role') == 'retailer' %}
+        <a href="{{ url_for('retailer_store') }}">Store</a>
+      {% endif %}
+      <span>  {{ session.get('username') }} ({{ session.get('role') }})</span>
+      <a href="{{ url_for('logout') }}">Logout</a>
+    {% else %}
+      <a href="{{ url_for('home') }}">Login</a>
+      <a href="{{ url_for('register') }}">Register</a>
+    {% endif %}
+  </div>
+</nav>
+<div class="content">
+  {% block content %}{% endblock %}
+</div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="layout-app">
+  <div id="div1" class="panel products-panel">
+    <h3>Products</h3>
+    <div class="product-grid">
+      {% for item in items %}
+      <div class="product-card">
+        <img src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}" alt="{{ item.name }}">
+        <h4>{{ item.name }}</h4>
+        <p class="meta">Retailer: {{ item.retailer }} | {{ item.category }}</p>
+        <p>{{ item.description_short }}</p>
+        <a class="btn small" href="{{ url_for('product_page', retailer=item.retailer, item_id=item.item_id) }}">More Info</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div id="div2" class="panel chat-panel">
+    {% include "partials/_chat_window.html" %}
+  </div>
+  <div id="div3" class="panel ratings-panel">
+    {% include "partials/_rating_popup.html" %}
+    <h3>Testimonials</h3>
+    <ul id="ratingCounts">
+      <li>Excellent: <span id="countExcellent">{{ counts.excellent or 0 }}</span></li>
+      <li>Good: <span id="countGood">{{ counts.good or 0 }}</span></li>
+      <li>Bad: <span id="countBad">{{ counts.bad or 0 }}</span></li>
+    </ul>
+  </div>
+  <div id="div4" class="panel faq-panel">
+    {% include "partials/_faq_section.html" %}
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+<script src="{{ url_for('static', filename='js/rating.js') }}"></script>
+<script src="{{ url_for('static', filename='js/faq.js') }}"></script>
+{% endblock %}
