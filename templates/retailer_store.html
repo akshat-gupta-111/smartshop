@@ -1,87 +1,238 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="retailer-layout">
-  <div class="retailer-left">
-    <h2>Your Products</h2>
-    <form id="uploadForm" class="upload-form">
-      <input type="text" name="name" placeholder="Name" required />
-      <select name="category">
-        <option value="tech">Tech</option>
-        <option value="clothing">Clothing</option>
-        <option value="furniture">Furniture</option>
-        <option value="other">Other</option>
-      </select>
-      <textarea name="description" placeholder="Description" required></textarea>
-      <input type="text" name="price" placeholder="Price" />
-      <input type="number" name="stock" placeholder="Stock" />
-      <input type="text" name="tags" placeholder="Tags (comma separated)" />
-      <input type="file" name="image" required />
-      <button type="submit">Upload</button>
-      <div id="uploadStatus"></div>
-    </form>
 
-    <div class="product-grid" id="retailerProducts">
-      {% for item in items %}
-      <div class="product-card" data-item-id="{{ item.item_id }}">
-        <img src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}" alt="{{ item.name }}">
-        <h4>{{ item.name }}</h4>
-        <p class="meta">{{ item.category }} | ${{ "%.2f"|format(item.price) }} | Stock: {{ item.stock }}</p>
-        <p>{{ item.description_short }}</p>
-        <div class="actions-row">
-          <a class="btn small" href="{{ url_for('product_page', retailer=item.retailer, item_id=item.item_id) }}">View</a>
-          <button class="btn small edit-btn" data-id="{{ item.item_id }}">Edit</button>
-          <button class="btn small danger delete-btn" data-id="{{ item.item_id }}">Delete</button>
+{% block content %}
+<div class="min-h-screen p-4 sm:p-6 lg:p-8">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <div class="lg:col-span-2">
+      <div class="bg-slate-900/50 backdrop-blur-xl border border-slate-700 rounded-2xl shadow-2xl">
+        <div class="p-6 sm:p-8 border-b border-slate-700">
+          <h2 class="text-3xl font-bold text-white flex items-center gap-3">
+            <i data-feather="package" class="w-8 h-8 text-indigo-400"></i>
+            <span>Add a New Product</span>
+          </h2>
+          <p class="mt-1 text-slate-400">Fill in the details below to add a new item to your store.</p>
         </div>
-        <form class="edit-form hidden" data-id="{{ item.item_id }}">
-          <input type="text" name="name" value="{{ item.name }}" required />
-            <select name="category">
-              <option value="tech" {% if item.category=='tech' %}selected{% endif %}>Tech</option>
-              <option value="clothing" {% if item.category=='clothing' %}selected{% endif %}>Clothing</option>
-              <option value="furniture" {% if item.category=='furniture' %}selected{% endif %}>Furniture</option>
-              <option value="other" {% if item.category=='other' %}selected{% endif %}>Other</option>
-            </select>
-            <textarea name="description" required>{{ item.description_full }}</textarea>
-            <input type="text" name="price" value="{{ item.price }}" />
-            <input type="number" name="stock" value="{{ item.stock }}" />
-            <input type="text" name="tags" value="{{ item.tags | join(', ') }}" />
-            <div class="edit-actions">
-              <button type="submit" class="btn small">Save</button>
-              <button type="button" class="btn small cancel-edit" data-id="{{ item.item_id }}">Cancel</button>
+        
+        <form id="uploadForm" class="p-6 sm:p-8 space-y-6">
+          
+          <div class="relative">
+            <input type="text" id="name" name="name" class="peer block w-full pl-10 pb-2.5 pt-4 text-sm text-slate-100 bg-slate-800 rounded-lg border-2 border-slate-600 appearance-none focus:outline-none focus:ring-0 focus:border-indigo-500" placeholder=" " required />
+            <label for="name" class="absolute text-sm text-slate-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-slate-800 px-2 left-1 peer-focus:px-2 peer-focus:text-indigo-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4">Product Name</label>
+            <div class="absolute top-1/2 -translate-y-1/2 left-3 text-slate-500 peer-focus:text-indigo-400 w-5 h-5"><i data-feather="gift"></i></div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="relative">
+              <select id="category" name="category" class="peer block w-full pl-10 pb-2.5 pt-4 text-sm text-slate-100 bg-slate-800 rounded-lg border-2 border-slate-600 appearance-none focus:outline-none focus:ring-0 focus:border-indigo-500">
+                <option class="text-white bg-slate-900" value="tech">Tech</option>
+                <option class="text-white bg-slate-900" value="clothing">Clothing</option>
+                <option class="text-white bg-slate-900" value="furniture">Furniture</option>
+                <option class="text-white bg-slate-900" value="other">Other</option>
+              </select>
+              <label for="category" class="absolute text-sm text-slate-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-slate-800 px-2 left-1 peer-focus:px-2 peer-focus:text-indigo-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4">Category</label>
+              <div class="absolute top-1/2 -translate-y-1/2 left-3 text-slate-500 peer-focus:text-indigo-400 w-5 h-5"><i data-feather="tag"></i></div>
+              <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none"><i data-feather="chevron-down" class="w-4 h-4 text-slate-500"></i></div>
             </div>
-            <div class="edit-status" data-status-for="{{ item.item_id }}"></div>
+             <div class="relative">
+              <input type="text" id="tags" name="tags" class="peer block w-full pl-10 pb-2.5 pt-4 text-sm text-slate-100 bg-slate-800 rounded-lg border-2 border-slate-600 appearance-none focus:outline-none focus:ring-0 focus:border-indigo-500" placeholder=" " />
+              <label for="tags" class="absolute text-sm text-slate-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-slate-800 px-2 left-1 peer-focus:px-2 peer-focus:text-indigo-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4">Tags (comma separated)</label>
+              <div class="absolute top-1/2 -translate-y-1/2 left-3 text-slate-500 peer-focus:text-indigo-400 w-5 h-5"><i data-feather="hash"></i></div>
+            </div>
+          </div>
+          
+          <div class="relative">
+            <textarea id="description" name="description" rows="4" class="peer block w-full pl-10 pb-2.5 pt-4 text-sm text-slate-100 bg-slate-800 rounded-lg border-2 border-slate-600 appearance-none focus:outline-none focus:ring-0 focus:border-indigo-500 resize-none" placeholder=" " required></textarea>
+            <label for="description" class="absolute text-sm text-slate-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-slate-800 px-2 left-1 peer-focus:px-2 peer-focus:text-indigo-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4">Product Description</label>
+            <div class="absolute top-3.5 left-3 text-slate-500 peer-focus:text-indigo-400 w-5 h-5"><i data-feather="align-left"></i></div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="relative">
+              <input type="number" step="0.01" id="price" name="price" class="peer block w-full pl-10 pb-2.5 pt-4 text-sm text-slate-100 bg-slate-800 rounded-lg border-2 border-slate-600 appearance-none focus:outline-none focus:ring-0 focus:border-indigo-500" placeholder=" " required />
+              <label for="price" class="absolute text-sm text-slate-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-slate-800 px-2 left-1 peer-focus:px-2 peer-focus:text-indigo-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4">Price ($)</label>
+              <div class="absolute top-1/2 -translate-y-1/2 left-3 text-slate-500 peer-focus:text-indigo-400 w-5 h-5"><i data-feather="dollar-sign"></i></div>
+            </div>
+            <div class="relative">
+              <input type="number" id="stock" name="stock" class="peer block w-full pl-10 pb-2.5 pt-4 text-sm text-slate-100 bg-slate-800 rounded-lg border-2 border-slate-600 appearance-none focus:outline-none focus:ring-0 focus:border-indigo-500" placeholder=" " required />
+              <label for="stock" class="absolute text-sm text-slate-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-slate-800 px-2 left-1 peer-focus:px-2 peer-focus:text-indigo-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4">Stock</label>
+              <div class="absolute top-1/2 -translate-y-1/2 left-3 text-slate-500 peer-focus:text-indigo-400 w-5 h-5"><i data-feather="archive"></i></div>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Product Image</label>
+            <div id="imageUploadBox" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-600 border-dashed rounded-xl transition-colors duration-300 hover:border-indigo-500 hover:bg-slate-800/50">
+              <div id="uploadInitialState" class="space-y-1 text-center">
+                <i data-feather="image" class="mx-auto h-12 w-12 text-slate-500"></i>
+                <div class="flex text-sm text-slate-400">
+                  <label for="file-upload" class="relative cursor-pointer rounded-md font-medium text-indigo-400 hover:text-indigo-300">
+                    <span>Upload a file</span>
+                    <input id="file-upload" name="image" type="file" class="sr-only" accept="image/*" onchange="previewImage(event)" required>
+                  </label>
+                  <p class="pl-1">or drag and drop</p>
+                </div>
+                <p class="text-xs text-slate-500">PNG, JPG, GIF up to 10MB</p>
+              </div>
+              <div id="imagePreview" class="hidden relative w-full max-w-sm mx-auto">
+                <img id="previewImg" class="w-full h-auto max-h-64 object-contain rounded-lg" />
+                <button type="button" id="removeImageBtn" class="absolute -top-2 -right-2 bg-slate-700 rounded-full p-1 shadow-lg text-red-400 hover:bg-slate-600">
+                    <i data-feather="x" class="w-5 h-5"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-indigo-500 transform hover:scale-105 transition-all duration-300">
+              Upload Product
+            </button>
+            <div id="uploadStatus" class="text-sm text-slate-400 text-center mt-3"></div>
+          </div>
         </form>
       </div>
-      {% endfor %}
+    </div>
+
+    <div class="hidden lg:block">
+      <div class="bg-slate-900/50 backdrop-blur-xl border border-slate-700 rounded-2xl shadow-xl p-6 sticky top-28">
+        <section class="faq-section">
+          {% include "partials/_faq_section.html" %}
+        </section>
+      </div>
+    </div>
+    
+    <div class="lg:col-span-3 mt-8">
+        <h2 class="text-2xl font-semibold text-white mb-5">Your Products</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="retailerProducts">
+            {% for item in items %}
+            <div class="bg-slate-900/50 border border-slate-700 rounded-xl overflow-hidden hover:shadow-2xl hover:border-indigo-500/50 transition-all duration-300" data-item-id="{{ item.item_id }}">
+                <img src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}" alt="{{ item.name }}" class="w-full h-48 object-cover">
+                <div class="p-5">
+                    <h4 class="text-lg font-semibold text-slate-100 truncate">{{ item.name }}</h4>
+                    <p class="text-sm text-slate-400 mt-1">{{ item.category }} • ${{ "%.2f"|format(item.price) }} • Stock: {{ item.stock }}</p>
+                    <div class="flex gap-2 mt-4">
+                        <a href="{{ url_for('product_page', retailer=item.retailer, item_id=item.item_id) }}" class="flex-1 text-center px-4 py-2 rounded-lg text-sm font-medium border border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white transition">View</a>
+                        <button class="flex-1 px-4 py-2 rounded-lg text-sm font-medium border border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white transition edit-btn" data-id="{{ item.item_id }}">Edit</button>
+                        <button class="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition delete-btn" data-id="{{ item.item_id }}">Delete</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
   </div>
+</div>
 
-  <div class="retailer-right">
-    <section class="faq-section">
-      {% include "partials/_faq_section.html" %}
-    </section>
-  </div>
+<div id="editModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-6">
+        <h3 class="text-2xl font-bold text-white mb-4">Edit Product</h3>
+        <form id="editForm">
+            <input type="hidden" id="editItemId" name="item_id">
+            <div class="space-y-4 text-slate-300">
+                <div>
+                    <label for="editName" class="block text-sm font-medium mb-1">Product Name</label>
+                    <input type="text" id="editName" name="name" class="w-full px-3 py-2 border border-slate-600 bg-slate-800 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div>
+                    <label for="editDescription" class="block text-sm font-medium mb-1">Description</label>
+                    <textarea id="editDescription" name="description" rows="3" class="w-full px-3 py-2 border border-slate-600 bg-slate-800 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="editPrice" class="block text-sm font-medium mb-1">Price ($)</label>
+                        <input type="number" step="0.01" id="editPrice" name="price" class="w-full px-3 py-2 border border-slate-600 bg-slate-800 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="editStock" class="block text-sm font-medium mb-1">Stock</label>
+                        <input type="number" id="editStock" name="stock" class="w-full px-3 py-2 border border-slate-600 bg-slate-800 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+                <button type="button" id="cancelEditBtn" class="px-4 py-2 bg-slate-700 text-slate-200 rounded-lg hover:bg-slate-600">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Save Changes</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
 <script src="{{ url_for('static', filename='js/faq.js') }}"></script>
 <script src="{{ url_for('static', filename='js/retailer_manage.js') }}"></script>
+
 <script>
-document.getElementById('uploadForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const form = e.target;
-  const fd = new FormData(form);
-  const res = await fetch("{{ url_for('upload_product') }}", {
-    method: 'POST',
-    body: fd
-  });
-  const data = await res.json();
-  const status = document.getElementById('uploadStatus');
-  if(data.ok){
-    status.textContent = "Uploaded successfully. Reloading...";
-    setTimeout(()=>location.reload(), 800);
-  } else {
-    status.textContent = data.error || "Upload failed.";
-  }
+document.addEventListener('DOMContentLoaded', function() {
+    // --- FORM SUBMISSION SCRIPT ---
+    const uploadForm = document.getElementById('uploadForm');
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const fd = new FormData(form);
+            const status = document.getElementById('uploadStatus');
+            status.textContent = "Uploading, please wait...";
+
+            try {
+                const res = await fetch("{{ url_for('upload_product') }}", { method: 'POST', body: fd });
+                const data = await res.json();
+                if (data.ok) {
+                    status.textContent = "✅ Uploaded successfully. Reloading...";
+                    setTimeout(() => location.reload(), 800);
+                } else {
+                    status.textContent = "❌ " + (data.error || "Upload failed.");
+                }
+            } catch (error) {
+                console.error("Upload error:", error);
+                status.textContent = "❌ An error occurred during upload.";
+            }
+        });
+    }
+
+    // --- IMAGE PREVIEW AND DRAG-DROP SCRIPT ---
+    const uploadBox = document.getElementById('imageUploadBox');
+    const initialState = document.getElementById('uploadInitialState');
+    const previewDiv = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    const fileInput = document.getElementById('file-upload');
+    const removeImageBtn = document.getElementById('removeImageBtn');
+
+    window.previewImage = function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            initialState.classList.add("hidden");
+            previewDiv.classList.remove("hidden");
+            previewImg.src = URL.createObjectURL(file);
+            previewImg.onload = () => { URL.revokeObjectURL(previewImg.src); }
+        }
+    }
+
+    if (removeImageBtn) {
+        removeImageBtn.addEventListener('click', () => {
+            fileInput.value = "";
+            previewDiv.classList.add("hidden");
+            initialState.classList.remove("hidden");
+        });
+    }
+
+    if (uploadBox) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadBox.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadBox.addEventListener(eventName, () => { uploadBox.classList.add('border-indigo-500', 'bg-slate-800/50'); });
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadBox.addEventListener(eventName, () => { uploadBox.classList.remove('border-indigo-500', 'bg-slate-800/50'); });
+        });
+        uploadBox.addEventListener('drop', e => {
+            fileInput.files = e.dataTransfer.files;
+            previewImage({ target: fileInput });
+        });
+    }
 });
 </script>
+
 {% endblock %}

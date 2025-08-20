@@ -224,6 +224,90 @@
       "question": "how To add image to product",
       "answer": "Retailers upload images from the store panel when adding/editing a product. Ensure the image meets format and size requirements outlined in the retailer guidelines.",
       "ts": "2025-08-16T05:07:55Z"
+    },
+    {
+      "id": "cc737e67-e475-4b6f-93c5-506c6df7fe85",
+      "user": "nischal",
+      "question": "hey how i can order the product",
+      "answer": "I can help only with platform usage, accounts, products, and purchase requests.",
+      "ts": "2025-08-16T06:06:06Z"
+    },
+    {
+      "id": "9068f6b1-9512-41aa-9202-a019e249791f",
+      "user": "Akshat11",
+      "question": "mainpuri",
+      "answer": "I can help only with platform usage, accounts, products, and purchase requests.",
+      "ts": "2025-08-17T16:27:53Z"
+    },
+    {
+      "id": "05a44247-6ac8-4ce8-8e7c-af597a304c67",
+      "user": "Akshat11",
+      "question": "can you tell me how i can purchase the products",
+      "answer": "I can help only with platform usage, accounts, products, and purchase requests.",
+      "ts": "2025-08-17T16:28:12Z"
+    },
+    {
+      "id": "866719c7-684b-4624-aa7e-7edac13659c5",
+      "user": "Akshat11",
+      "question": "hello",
+      "answer": "I can help only with platform usage, accounts, products, and purchase requests.",
+      "ts": "2025-08-18T13:19:44Z"
+    },
+    {
+      "id": "45a040d3-6fc1-444e-b418-af1dacf056da",
+      "user": "Akshat11",
+      "question": "hello",
+      "answer": "I can help only with platform usage, accounts, products, and purchase requests.",
+      "ts": "2025-08-18T13:19:46Z"
+    },
+    {
+      "id": "79f49f42-d862-4346-9f61-92c52e920701",
+      "user": "Akshat11",
+      "question": "hello",
+      "answer": "I can help only with platform usage, accounts, products, and purchase requests.",
+      "ts": "2025-08-18T13:19:48Z"
+    },
+    {
+      "id": "cd573f16-2130-4e4d-9066-2ff8d52fb020",
+      "user": "Akshat11",
+      "question": "sdfghjk",
+      "answer": "I can help only with platform usage, accounts, products, and purchase requests.",
+      "ts": "2025-08-18T13:25:56Z"
+    },
+    {
+      "id": "78b62041-c31c-4e4d-8253-d00dcae9caff",
+      "user": "nischal",
+      "question": "how can i register",
+      "answer": "Use Register and choose a role.",
+      "ts": "2025-08-20T04:30:53Z"
+    },
+    {
+      "id": "9262dc3b-3bd2-4a05-bb8b-d22205f1590b",
+      "user": "nischal",
+      "question": "how can i register",
+      "answer": "Use Register and choose a role.",
+      "ts": "2025-08-20T04:30:56Z"
+    },
+    {
+      "id": "a4764aee-2b4f-49fd-824d-dabc3859da69",
+      "user": "nischal",
+      "question": "how i list products",
+      "answer": "Retailers upload products from their store panel. Ensure your account has the correct retailer role. For AI recommendations, the system uses your preferences to match item metadata. Purchase requests are made by opening a product and clicking the \"Request Purchase\" button.",
+      "ts": "2025-08-20T04:31:16Z"
+    },
+    {
+      "id": "35e519cc-85c8-4d0c-a26d-74d03cabf04b",
+      "user": "nischal",
+      "question": "how do i logout",
+      "answer": "I can help only with platform usage, accounts, products, and purchase requests.",
+      "ts": "2025-08-20T04:39:07Z"
+    },
+    {
+      "id": "993e293c-d4ca-48b5-9c7d-cd0d31c3c8cf",
+      "user": "nischal",
+      "question": "how can i purchase",
+      "answer": "Open a product and click Request Purchase. I can help only with platform usage, accounts, products, and purchase requests.",
+      "ts": "2025-08-20T04:39:18Z"
     }
   ]
 }

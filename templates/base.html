@@ -1,32 +1,335 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ title if title else "Smart E-Commerce" }}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-</head>
-<body>
-<nav class="nav">
-  <div class="logo"><a href="{{ url_for('home') }}" style="color:#fff;text-decoration:none;">SmartShop</a></div>
-  <div class="nav-links">
-    {% if session.get('username') %}
-      {% if session.get('role') == 'user' %}
-        <a href="{{ url_for('user_app') }}">Home</a>
-        <a href="{{ url_for('cart_page') }}">Cart  <!-- {% if cart_count and cart_count >= 0 %} ({{ cart_count }}){% endif %} --></a>
-      {% elif session.get('role') == 'retailer' %}
-        <a href="{{ url_for('retailer_store') }}">Store</a>
-      {% endif %}
-      <span>  {{ session.get('username') }} ({{ session.get('role') }})</span>
-      <a href="{{ url_for('logout') }}">Logout</a>
-    {% else %}
-      <a href="{{ url_for('home') }}">Login</a>
-      <a href="{{ url_for('register') }}">Register</a>
-    {% endif %}
-  </div>
-</nav>
-<div class="content">
-  {% block content %}{% endblock %}
-</div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ title if title else "Smart E-Commerce" }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+
+    </head>
+  <body
+    class="bg-gradient-to-br from-gray-950 via-black to-gray-900 text-white overflow-x-hidden relative"
+  >
+    <div
+      id="loader"
+      class="fixed inset-0 flex items-center justify-center bg-gray-950 z-50"
+    >
+      <div
+        class="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-cyan-400"
+      ></div>
+    </div>
+
+    <nav
+      x-data="{ mobileMenuOpen: false, userDropdownOpen: false }"
+      class="fixed top-4 left-4 right-4 z-50 bg-slate-900/60 backdrop-blur-2xl border border-white/30 shadow-2xl rounded-3xl transition-all duration-500 hover:bg-slate-900/70 hover:shadow-indigo-500/20 hover:shadow-3xl hover:border-white/40 before:absolute before:inset-0 before:bg-gradient-to-r before:from-indigo-500/10 before:via-purple-500/5 before:to-pink-500/10 before:rounded-3xl before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500"
+    >
+      <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 relative z-10">
+        <div class="flex items-center justify-between h-20">
+          <div class="flex-shrink-0">
+            <a
+              href="{{ url_for('home') }}"
+              class="text-3xl font-black bg-gradient-to-r from-[#818cf8] via-[#a855f7] to-[#c084fc] bg-clip-text text-transparent tracking-tight hover:scale-105 transition-all duration-300 drop-shadow-sm"
+            >
+              SmartShop
+            </a>
+          </div>
+
+          <div class="hidden md:flex items-center space-x-3">
+            {% if session.get('username') %} {% if session.get('role') == 'user'
+            %}
+            <a
+              href="{{ url_for('user_app') }}"
+              class="relative px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 overflow-hidden group {% if active_page == 'user_home' %} bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30 {% else %} text-slate-300 hover:text-white before:absolute before:inset-0 before:bg-gradient-to-r before:from-slate-700/50 before:to-slate-600/50 before:rounded-xl before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100 {% endif %}"
+            >
+              <span class="relative z-10">Home</span>
+            </a>
+
+            <a
+              href="{{ url_for('cart_page') }}"
+              class="relative px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 overflow-hidden group {% if active_page == 'cart' %} bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30 {% else %} text-slate-300 hover:text-white before:absolute before:inset-0 before:bg-gradient-to-r before:from-slate-700/50 before:to-slate-600/50 before:rounded-xl before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100 {% endif %}"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 relative z-10"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
+                />
+              </svg>
+              <span class="relative z-10">Cart</span>
+              {% if cart_count and cart_count > 0 %}
+              <span
+                class="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 text-xs font-bold bg-gradient-to-r from-pink-500 to-red-500 rounded-full shadow-lg animate-pulse z-20"
+                >{{ cart_count }}</span
+              >
+              {% endif %}
+            </a>
+            {% elif session.get('role') == 'retailer' %}
+            <a
+              href="{{ url_for('retailer_store') }}"
+              class="relative px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 overflow-hidden group {% if active_page == 'store' %} bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30 {% else %} text-slate-300 hover:text-white before:absolute before:inset-0 before:bg-gradient-to-r before:from-slate-700/50 before:to-slate-600/50 before:rounded-xl before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100 {% endif %}"
+            >
+              <span class="relative z-10">My Store</span>
+            </a>
+            {% endif %}
+
+            <div class="relative ml-6" @click.away="userDropdownOpen = false">
+              <button
+                @click="userDropdownOpen = !userDropdownOpen"
+                class="flex items-center gap-3 text-white bg-slate-800/60 backdrop-blur-sm px-4 py-2.5 rounded-full hover:bg-slate-700/70 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-indigo-400 border border-slate-700/50 hover:border-slate-600/50 shadow-lg hover:shadow-xl group"
+              >
+                <span class="sr-only">Open user menu</span>
+                <img
+                  class="h-8 w-8 rounded-full ring-2 ring-slate-600/50 group-hover:ring-indigo-400/50 transition-all duration-300"
+                  src="https://ui-avatars.com/api/?name={{ session.get('username')|urlencode }}&background=818cf8&color=fff&bold=true"
+                  alt="User Avatar"
+                />
+                <span class="text-slate-200 font-medium"
+                  >{{ session.get('username') }}</span
+                >
+                <svg
+                  class="h-4 w-4 text-slate-400 transition-all duration-300 group-hover:text-slate-300"
+                  :class="{ 'rotate-180': userDropdownOpen }"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+
+              <div
+                x-show="userDropdownOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="transform opacity-0 scale-95"
+                x-transition:enter-end="transform opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="transform opacity-100 scale-100"
+                x-transition:leave-end="transform opacity-0 scale-95"
+                class="origin-top-right absolute right-0 mt-3 w-52 rounded-2xl shadow-2xl py-2 bg-white/95 backdrop-blur-xl ring-1 ring-black/10 focus:outline-none border border-white/20"
+                style="display: none"
+              >
+                <a
+                  href="#"
+                  class="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200 rounded-xl mx-2 hover:text-indigo-700"
+                  >My Profile</a
+                >
+                <hr class="my-1 border-gray-200/50" />
+                <a
+                  href="{{ url_for('logout') }}"
+                  class="block w-full text-left px-4 py-3 text-sm font-medium text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 transition-all duration-200 rounded-xl mx-2 hover:text-red-700"
+                  >Logout</a
+                >
+              </div>
+            </div>
+
+            {% else %}
+            <a
+              href="{{ url_for('home') }}"
+              class="relative px-5 py-2.5 rounded-xl text-lg font-medium text-slate-300 hover:text-white transition-all duration-300 overflow-hidden group before:absolute before:inset-0 before:bg-gradient-to-r before:from-slate-700/50 before:to-slate-600/50 before:rounded-xl before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100"
+            >
+              <span class="relative z-10">Login</span>
+            </a>
+            <a
+              href="{{ url_for('register') }}"
+              class="relative ml-3 px-5 py-2.5 rounded-xl text-lg font-medium text-slate-300 hover:text-white transition-all duration-300 overflow-hidden group before:absolute before:inset-0 before:bg-gradient-to-r before:from-slate-700/50 before:to-slate-600/50 before:rounded-xl before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100"
+            >
+              <span class="relative z-10">Register</span>
+            </a>
+            {% endif %}
+          </div>
+
+          <div class="-mr-2 flex md:hidden">
+            <button
+              @click="mobileMenuOpen = !mobileMenuOpen"
+              type="button"
+              class="inline-flex items-center justify-center p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-indigo-400 transition-all duration-300 backdrop-blur-sm border border-slate-700/50 hover:border-slate-600/50"
+            >
+              <span class="sr-only">Open main menu</span>
+              <svg
+                x-show="!mobileMenuOpen"
+                class="block h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+              <svg
+                x-show="mobileMenuOpen"
+                class="block h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div
+        x-show="mobileMenuOpen"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="transform opacity-0 -translate-y-2"
+        x-transition:enter-end="transform opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="transform opacity-100 translate-y-0"
+        x-transition:leave-end="transform opacity-0 -translate-y-2"
+        class="md:hidden bg-slate-800/30 backdrop-blur-sm rounded-b-2xl border-t border-white/10 mt-1"
+        style="display: none"
+      >
+        <div class="px-4 pt-4 pb-6 space-y-2 sm:px-6">
+          {% if session.get('username') %} {% if session.get('role') == 'user'
+          %}
+          <a
+            href="{{ url_for('user_app') }}"
+            class="block px-4 py-3 rounded-xl text-base font-medium transition-all duration-300 {% if active_page == 'user_home' %} bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg {% else %} text-slate-300 hover:bg-slate-700/50 hover:text-white {% endif %}"
+            >Home</a
+          >
+          <a
+            href="{{ url_for('cart_page') }}"
+            class="block px-4 py-3 rounded-xl text-base font-medium transition-all duration-300 {% if active_page == 'cart' %} bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg {% else %} text-slate-300 hover:bg-slate-700/50 hover:text-white {% endif %}"
+            >Cart {% if cart_count and cart_count > 0 %}({{cart_count}}){% endif
+            %}</a
+          >
+          {% elif session.get('role') == 'retailer' %}
+          <a
+            href="{{ url_for('retailer_store') }}"
+            class="block px-4 py-3 rounded-xl text-base font-medium transition-all duration-300 {% if active_page == 'store' %} bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg {% else %} text-slate-300 hover:bg-slate-700/50 hover:text-white {% endif %}"
+            >My Store</a
+          >
+          {% endif %}
+
+          <div class="pt-4 mt-4 border-t border-slate-700/50">
+            <div
+              class="flex items-center px-4 py-3 bg-slate-800/40 rounded-xl backdrop-blur-sm"
+            >
+              <img
+                class="h-10 w-10 rounded-full ring-2 ring-slate-600/50"
+                src="https://ui-avatars.com/api/?name={{ session.get('username')|urlencode }}&background=818cf8&color=fff&bold=true"
+                alt=""
+              />
+              <div class="ml-4">
+                <div class="text-base font-medium text-white">
+                  {{ session.get('username') }}
+                </div>
+                <div class="text-sm font-medium text-slate-400 capitalize">
+                  {{ session.get('role') }}
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 px-2 space-y-2">
+              <a
+                href="#"
+                class="block px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:bg-slate-700/50 hover:text-white transition-all duration-300"
+                >My Profile</a
+              >
+              <a
+                href="{{ url_for('logout') }}"
+                class="block px-4 py-3 rounded-xl text-base font-medium text-red-400 hover:bg-red-900/30 hover:text-red-300 transition-all duration-300"
+                >Logout</a
+              >
+            </div>
+          </div>
+
+          {% else %}
+          <a
+            href="{{ url_for('home') }}"
+            class="block px-4 py-3 rounded-xl text-base font-medium transition-all duration-300 {% if active_page == 'login' %} bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg {% else %} text-slate-300 hover:bg-slate-700/50 hover:text-white {% endif %}"
+            >Login</a
+          >
+          <a
+            href="{{ url_for('register') }}"
+            class="mt-3 block w-full text-center px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:bg-slate-700/50 hover:text-white transition-all duration-300"
+            >Register</a
+          >
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+
+    <div
+      id="particles-js"
+      class="absolute inset-0 -z-10 pointer-events-none"
+    ></div>
+
+    <main class="pt-28">
+      <div class="px-6 lg:px-16">{% block content %}{% endblock %}</div>
+    </main>
+
+    <footer
+      class="mt-20 py-8 text-center text-gray-400 bg-black/30 backdrop-blur-lg border-t border-gray-800"
+    >
+      <p>© 2025 SmartShop. Built with ❤️ </p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@formkit/auto-animate@0.8.2/index.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js/particles.min.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Loader Hide
+        const loader = document.getElementById("loader");
+        if (loader) {
+            gsap.to(loader, { opacity: 0, duration: 0.5, onComplete: () => loader.style.display = 'none' });
+        }
+
+        // Init Feather Icons
+        feather.replace();
+
+        // Particles.js Init from your original code
+        particlesJS("particles-js", {
+          particles: {
+            number: { value: 400 },
+            color: { value: "#4facfe" },
+            shape: { type: "circle" },
+            opacity: { value: 2 },
+            size: { value: 2 },
+            line_linked: { enable: true, color: "#00f2fe", opacity: 0.4 },
+            move: { enable: true, speed: 2.5 },
+          },
+          interactivity: {
+            events: { onhover: { enable: true, mode: "grab" } },
+          },
+        });
+      });
+
+      // Re-run Feather Icons replacement after Alpine.js changes the DOM
+      document.addEventListener('alpine:init', () => {
+        Alpine.effect(() => {
+          feather.replace();
+        });
+      });
+    </script>
+  </body>
 </html>

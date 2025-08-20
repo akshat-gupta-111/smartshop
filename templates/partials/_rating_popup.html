@@ -1,9 +1,38 @@
-<div id="ratingPopup" class="rating-popup hidden">
-  <p>How was the recommendation?</p>
-  <div class="rating-buttons">
-    <button data-rate="excellent">Excellent</button>
-    <button data-rate="good">Good</button>
-    <button data-rate="bad">Bad</button>
+<div 
+  id="ratingPopup" 
+  class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center hidden z-50"
+>
+  <div class="bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-2xl border border-gray-200 w-80 text-center">
+    <p class="text-lg font-semibold text-gray-800 mb-4">⭐ How was the recommendation?</p>
+
+    <!-- Rating Buttons -->
+    <div class="rating-buttons flex justify-center gap-3 mb-4">
+      <button 
+        data-rate="excellent" 
+        class="px-4 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white shadow transition"
+      >
+        Excellent
+      </button>
+      <button 
+        data-rate="good" 
+        class="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white shadow transition"
+      >
+        Good
+      </button>
+      <button 
+        data-rate="bad" 
+        class="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white shadow transition"
+      >
+        Bad
+      </button>
+    </div>
+
+    <!-- Close Button -->
+    <button 
+      id="closeRatingPopup" 
+      class="mt-2 px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-700 shadow-sm transition"
+    >
+      ✖ Close
+    </button>
   </div>
-  <button id="closeRatingPopup" class="close-btn">Close</button>
 </div>

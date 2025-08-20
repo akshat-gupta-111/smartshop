@@ -1,11 +1,176 @@
-<div class="chat-wrapper">
-  <h3>AI Assistant</h3>
-  <div id="chatMessages" class="chat-messages"></div>
-  <div class="chat-controls">
-    <textarea id="chatInput" placeholder="Type preference or follow-up..."></textarea>
-    <div class="chat-buttons">
-      <button id="startChatBtn">Start Chat</button>
-      <button id="sendChatBtn" disabled>Send</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant Chat Client</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        /* Simple scrollbar styling for better look */
+        #chatMessages::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chatMessages::-webkit-scrollbar-track {
+            background: #1e293b; /* slate-800 */
+        }
+        #chatMessages::-webkit-scrollbar-thumb {
+            background: #4f46e5; /* indigo-600 */
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 flex items-center justify-center h-screen p-4">
+
+    <div class="flex flex-col h-[600px] w-full max-w-lg bg-slate-900/50 text-slate-100 rounded-2xl border border-slate-700 shadow-2xl backdrop-blur-xl">
+
+        <div class="flex items-center p-4 border-b border-slate-700 flex-shrink-0">
+            <div class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-indigo-500">
+                <img class="aspect-square h-full w-full" src="https://i.pravatar.cc/150?u=ai-assistant" alt="AI Avatar">
+            </div>
+            <div class="ml-3">
+                <p class="text-lg font-semibold leading-none text-white">SmartShop Assistant</p>
+                <p class="text-sm text-slate-400">Online</p>
+            </div>
+        </div>
+
+        <div id="chatMessages" class="flex-grow p-4 space-y-4 overflow-y-auto">
+            </div>
+
+        <div class="border-t border-slate-700 p-4 flex items-center gap-2">
+            <textarea 
+                id="chatInput"
+                placeholder="Type your message..."
+                class="w-full resize-none rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 ring-offset-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1"
+                rows="1"
+            ></textarea>
+            <button id="sendChatBtn" class="inline-flex items-center justify-center rounded-lg text-sm font-medium h-10 w-10 bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-500 flex-shrink-0 transition-colors">
+                <i data-feather="send" class="w-5 h-5"></i>
+                <span class="sr-only">Send</span>
+            </button>
+        </div>
     </div>
-  </div>
-</div>
+
+    <script>
+        // ===============================================================
+        // =========== JAVASCRIPT LOGIC Synced with app.py ===============
+        // ===============================================================
+
+        const chatInput = document.getElementById('chatInput');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+        const chatMessages = document.getElementById('chatMessages');
+
+        // This variable will store the session ID for the entire conversation.
+        let currentChatSessionId = null;
+
+        const addMessage = (message, sender) => {
+            const sanitizedMessage = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            let messageHtml = '';
+            
+            if (sender === 'user') {
+                messageHtml = `
+                    <div class="flex items-end gap-3 justify-end">
+                        <div class="p-3 rounded-xl bg-indigo-600 text-white max-w-xs">
+                            <p class="text-sm">${sanitizedMessage}</p>
+                        </div>
+                    </div>
+                `;
+            } else { // Assistant's message
+                const formattedMessage = sanitizedMessage.replace(/\n/g, "<br>");
+                messageHtml = `
+                    <div class="flex items-end gap-3 justify-start">
+                        <div class="p-3 rounded-xl bg-slate-800 text-slate-200 max-w-xs">
+                            <p class="text-sm">${formattedMessage}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            chatMessages.insertAdjacentHTML('beforeend', messageHtml);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll
+        };
+        
+        const showLoadingIndicator = () => {
+            const loadingHtml = `
+                <div id="loading-bubble" class="flex items-end gap-3 justify-start">
+                    <div class="p-3 rounded-xl bg-slate-800 text-slate-200 max-w-xs">
+                        <div class="flex items-center justify-center space-x-1">
+                            <div class="h-2 w-2 bg-slate-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                            <div class="h-2 w-2 bg-slate-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                            <div class="h-2 w-2 bg-slate-500 rounded-full animate-bounce"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatMessages.insertAdjacentHTML('beforeend', loadingHtml);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        const removeLoadingIndicator = () => {
+            const loadingBubble = document.getElementById('loading-bubble');
+            if(loadingBubble) {
+                loadingBubble.remove();
+            }
+        }
+
+        const handleSendMessage = async () => {
+            const message = chatInput.value.trim();
+            if (message) {
+                addMessage(message, 'user');
+                chatInput.value = '';
+                showLoadingIndicator();
+
+                try {
+                    // *** THIS IS THE KEY CHANGE ***
+                    // We now call your actual Flask backend endpoint.
+                    // Make sure your Flask app is running on http://127.0.0.1:5000
+                    const response = await fetch("http://127.0.0.1:5000/api/assistant_chat", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        // We send the message AND the current session ID.
+                        body: JSON.stringify({ 
+                            message: message,
+                            session_id: currentChatSessionId 
+                        }),
+                    });
+                    
+                    const data = await response.json();
+                    removeLoadingIndicator();
+
+                    if (data.ok) {
+                        addMessage(data.response, 'assistant');
+                        // We save the session ID returned by the backend for the next message.
+                        currentChatSessionId = data.session_id; 
+                    } else {
+                        addMessage(data.error || "An error occurred.", 'assistant');
+                    }
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    removeLoadingIndicator();
+                    addMessage("Sorry, I could not connect to the assistant. Please make sure the backend server is running.", 'assistant');
+                }
+            }
+        };
+
+        // Function to start the chat and get the initial greeting
+        const startChat = () => {
+             // The first message is now the official greeting from the backend's session
+            addMessage("Hello! I'm SmartShop Assistant. How can I help you find the perfect product today?", 'assistant');
+        };
+
+        sendChatBtn.addEventListener('click', handleSendMessage);
+        chatInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                handleSendMessage();
+            }
+        });
+        
+        // Initialize Feather Icons
+        feather.replace();
+
+        // Start the chat when the page loads
+        startChat();
+    </script>
+</body>
+</html>

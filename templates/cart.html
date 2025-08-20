@@ -1,38 +1,107 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="cart-page">
-  <h2>Your Cart</h2>
+<div class="cart-page max-w-6xl mx-auto p-6">
+  <h2 class="text-black text-4xl font-extrabold mb-8 text-center ">
+    🛒 Your Shopping Cart
+  </h2>
+
   {% if items %}
-    <table class="cart-table">
-      <thead>
-        <tr>
-          <th>Item</th><th>Retailer</th><th>Category</th><th>Price</th><th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for it in items %}
-        <tr data-item="{{ it.item_id }}" data-retailer="{{ it.retailer }}">
-          <td><a href="{{ url_for('product_page', retailer=it.retailer, item_id=it.item_id) }}">{{ it.name }}</a></td>
-            <td>{{ it.retailer }}</td>
-            <td>{{ it.category }}</td>
-            <td>${{ "%.2f"|format(it.price) }}</td>
-            <td><button class="remove-btn" data-item="{{ it.item_id }}" data-retailer="{{ it.retailer }}">Remove</button></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <p class="total">Total: ${{ "%.2f"|format(total) }}</p>
-    <div class="cart-actions">
-      <a class="btn primary" href="{{ url_for('cart_checkout') }}">Buy All</a>
-      <button id="clearCartBtn" class="btn secondary">Clear Cart</button>
+    <div class="overflow-x-auto rounded-2xl shadow-lg bg-white dark:bg-gray-900">
+      <table class="w-full text-left border-collapse">
+        <thead class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 uppercase text-sm">
+          <tr>
+            <th class="p-4">Item</th>
+            <th class="p-4">Retailer</th>
+            <th class="p-4">Category</th>
+            <th class="p-4">Price</th>
+            <th class="p-4"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for it in items %}
+          <tr data-item="{{ it.item_id }}" data-retailer="{{ it.retailer }}" 
+              class="hover:bg-gray-50 dark:hover:bg-gray-800 transition duration-300 border-b border-gray-100 dark:border-gray-700">
+            <td class="p-4">
+              <a href="{{ url_for('product_page', retailer=it.retailer, item_id=it.item_id) }}" 
+                 class="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                {{ it.name }}
+              </a>
+            </td>
+            <td class="p-4 text-gray-600 dark:text-gray-300">{{ it.retailer }}</td>
+            <td class="p-4 text-gray-600 dark:text-gray-300">{{ it.category }}</td>
+            <td class="p-4 font-semibold text-green-600 dark:text-green-400">${{ "%.2f"|format(it.price) }}</td>
+            <td class="p-4 text-right">
+              <button class="remove-btn bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800/60 px-3 py-1 rounded-lg text-sm font-medium transition"
+                      data-item="{{ it.item_id }}" 
+                      data-retailer="{{ it.retailer }}">
+                ❌ Remove
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Total + Action Buttons -->
+    <div class="mt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+        Total: <span class="text-green-600 dark:text-green-400">${{ "%.2f"|format(total) }}</span>
+      </p>
+      <div class="flex gap-4">
+        <a class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-xl shadow-md transition transform hover:scale-105"
+           href="{{ url_for('cart_checkout') }}">💳 Buy All</a>
+        <button id="clearCartBtn" 
+                class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium px-6 py-2 rounded-xl shadow-md transition transform hover:scale-105">
+          🧹 Clear Cart
+        </button>
+      </div>
     </div>
   {% else %}
-    <p>Your cart is empty.</p>
+    <!-- Empty Cart State -->
+    <div class="flex flex-col items-center justify-center p-12 text-center">
+      <div id="emptyCartAnimation" class="w-56 h-56 mb-6"></div>
+      <p class="text-2xl font-medium text-gray-600 dark:text-gray-300">Your cart is empty.</p>
+      <a href="{{ url_for('home') }}" class="mt-6 inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-md transition">
+        🛍️ Continue Shopping
+      </a>
+    </div>
   {% endif %}
 </div>
+
+<!-- JS -->
 <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
 <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
 <script>
   setupCartPage();
+
+  // Animate rows when cart loads
+  gsap.from("tbody tr", { 
+    opacity: 0, 
+    y: 25, 
+    stagger: 0.1, 
+    duration: 0.6, 
+    ease: "power2.out" 
+  });
+
+  // Animate Total and Buttons
+  gsap.from(".mt-8", {
+    opacity: 0,
+    y: 30,
+    duration: 0.8,
+    delay: 0.3,
+    ease: "back.out(1.7)"
+  });
+
+  // Lottie animation for empty cart
+  if (document.getElementById("emptyCartAnimation")) {
+    lottie.loadAnimation({
+      container: document.getElementById("emptyCartAnimation"),
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      path: "https://assets6.lottiefiles.com/packages/lf20_puciaact.json"
+    });
+  }
 </script>
 {% endblock %}
