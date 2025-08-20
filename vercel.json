@@ -22,10 +22,5 @@
   "env": {
     "VERCEL": "1",
     "FLASK_ENV": "production"
-  },
-  "functions": {
-    "app.py": {
-      "maxDuration": 30
-    }
   }
 }
