@@ -1,11 +1,124 @@
-<h3>FAQ</h3>
-<ul id="faqList">
-  {% for faq in faqs %}
-  <li><strong>{{ faq.q }}</strong><br>{{ faq.a }}</li>
-  {% endfor %}
-</ul>
-<div class="faq-ask">
-  <textarea id="faqQuestion" placeholder="Ask a platform question..."></textarea>
-  <button id="faqAskBtn">Ask</button>
-  <div id="faqAnswer"></div>
+<div class="faq-wrapper text-slate-200">
+  <h3 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+    <i data-feather="help-circle" class="text-indigo-400"></i>
+    <span>Frequently Asked Questions</span>
+  </h3>
+
+  <ul id="faqList" class="space-y-3">
+    {% for faq in faqs %}
+    <li class="p-4 bg-slate-800/50 border border-slate-700 rounded-lg transition">
+      <strong class="text-slate-100 block mb-1">Q: {{ faq.q }}</strong>
+      <span class="text-slate-400 text-sm">A: {{ faq.a }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <div class="faq-ask mt-6 p-4 bg-slate-800/50 border border-slate-700 rounded-lg">
+    <label for="faqQuestion" class="block mb-2 text-slate-100 font-medium">Ask the AI Assistant a New Question</label>
+    
+    <textarea 
+      id="faqQuestion" 
+      placeholder="Type your question here about how the site works..." 
+      class="w-full resize-none border border-slate-600 bg-slate-700 text-slate-100 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm mb-3 placeholder:text-slate-400"
+      rows="3"
+    ></textarea>
+
+    <button 
+      id="faqAskBtn" 
+      class="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md hover:shadow-indigo-500/30 transition transform hover:scale-105 disabled:bg-slate-500 disabled:cursor-not-allowed"
+    >
+      <span class="btn-text">
+          <i data-feather="send" class="w-4 h-4 inline-block -mt-1 mr-2"></i>
+          Submit Question
+      </span>
+      <span class="loading-spinner" style="display: none;">
+          <div class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white inline-block"></div>
+          Asking AI...
+      </span>
+    </button>
+    
+    <div id="faqAnswer" class="mt-4 p-3 bg-slate-900/50 border border-slate-700 rounded-lg text-sm text-slate-300" style="display: none;"></div>
+  </div>
 </div>
+
+<script>
+    // Make sure this script runs after the DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        const faqQuestionInput = document.getElementById('faqQuestion');
+        const faqAskBtn = document.getElementById('faqAskBtn');
+        const faqAnswerDiv = document.getElementById('faqAnswer');
+
+        // Helper to toggle loading state on the button
+        const setLoadingState = (isLoading) => {
+            const btnText = faqAskBtn.querySelector('.btn-text');
+            const spinner = faqAskBtn.querySelector('.loading-spinner');
+            if (isLoading) {
+                faqAskBtn.disabled = true;
+                btnText.style.display = 'none';
+                spinner.style.display = 'inline-flex';
+            } else {
+                faqAskBtn.disabled = false;
+                btnText.style.display = 'inline-flex';
+                spinner.style.display = 'none';
+            }
+        };
+
+        const handleAskQuestion = async () => {
+            const question = faqQuestionInput.value.trim();
+            if (!question) {
+                faqAnswerDiv.textContent = 'Please enter a question.';
+                faqAnswerDiv.style.display = 'block';
+                return;
+            }
+
+            setLoadingState(true);
+            faqAnswerDiv.style.display = 'none'; // Hide previous answer
+
+            try {
+                // This sends the question to your Flask backend's /faq/ask route
+                const response = await fetch("{{ url_for('faq_ask') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        question: question
+                    })
+                });
+
+                const data = await response.json();
+
+                // Display the answer from the AI
+                if (data.ok) {
+                    faqAnswerDiv.textContent = `A: ${data.answer}`;
+                } else {
+                    faqAnswerDiv.textContent = `Error: ${data.error}`;
+                }
+                faqAnswerDiv.style.display = 'block';
+
+            } catch (error) {
+                console.error('FAQ fetch error:', error);
+                faqAnswerDiv.textContent = 'An error occurred while connecting to the assistant.';
+                faqAnswerDiv.style.display = 'block';
+            } finally {
+                setLoadingState(false);
+            }
+        };
+
+        // Attach the event listener to the button
+        faqAskBtn.addEventListener('click', handleAskQuestion);
+        
+        // Bonus: Allow pressing Enter to submit
+        faqQuestionInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                handleAskQuestion();
+            }
+        });
+
+        // Initialize Feather Icons if they aren't already
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
+    });
+</script>

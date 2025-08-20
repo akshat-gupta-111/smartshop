@@ -1,32 +1,101 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="product-detail">
-  <div class="image-col">
-    <img src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}" alt="{{ item.name }}">
-  </div>
-  <div class="info-col">
-    <h2>{{ item.name }}</h2>
-    <p><strong>Retailer:</strong> {{ item.retailer }}</p>
-    <p><strong>Category:</strong> {{ item.category }}</p>
-    <p><strong>Price:</strong> ${{ "%.2f"|format(item.price) }}</p>
-    <p><strong>Stock:</strong> {{ item.stock }}</p>
-    <p>{{ item.description_full }}</p>
-    {% if session.get('role') == 'user' %}
-      <div class="actions">
-        <a class="btn primary" href="{{ url_for('order_page', retailer=item.retailer, item_id=item.item_id) }}">Buy Now</a>
-        {% if in_cart %}
-          <button id="removeFromCartBtn" class="btn secondary">Remove from Cart</button>
-        {% else %}
-          <button id="addToCartBtn" class="btn secondary">Add to Cart</button>
-        {% endif %}
-      </div>
-      <div id="cartActionStatus"></div>
-      <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
-      <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
-      <script>
-        setupProductCartButtons("{{ item.item_id }}","{{ item.retailer }}", {{ 'true' if in_cart else 'false' }});
-      </script>
-    {% endif %}
+<div class="relative min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 px-6 lg:px-20 py-16 flex items-center justify-center overflow-hidden">
+
+  <!-- Floating gradient orbs background -->
+  <div class="absolute top-20 left-10 w-72 h-72 bg-indigo-600/30 rounded-full blur-3xl animate-pulse"></div>
+  <div class="absolute bottom-20 right-10 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+
+  <div class="product-detail grid grid-cols-1 lg:grid-cols-2 gap-12 items-start relative z-10 w-full max-w-7xl">
+
+    <!-- Product Image -->
+    <div class="image-col flex justify-center" data-scroll data-scroll-speed="1">
+      <img src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}"
+           alt="{{ item.name }}"
+           id="productImage"
+           class="w-full max-w-md rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.4)] border border-gray-700/60 bg-gray-900/70 backdrop-blur-lg transform transition duration-500 hover:scale-105 hover:shadow-indigo-500/70">
+    </div>
+
+    <!-- Product Info -->
+    <div class="info-col bg-gray-900/80 backdrop-blur-2xl rounded-2xl shadow-2xl border border-gray-700/40 p-10 lg:p-12"
+         data-scroll data-scroll-speed="2">
+      <h2 class="text-4xl lg:text-5xl font-extrabold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-6 tracking-tight">
+        {{ item.name }}
+      </h2>
+
+      <p class="text-gray-300 mb-2"><strong class="text-indigo-300">Retailer:</strong> {{ item.retailer }}</p>
+      <p class="text-gray-300 mb-2"><strong class="text-indigo-300">Category:</strong> {{ item.category }}</p>
+      <p class="text-gray-300 mb-2"><strong class="text-indigo-300">Price:</strong> ${{ "%.2f"|format(item.price) }}</p>
+      <p class="text-gray-300 mb-6"><strong class="text-indigo-300">Stock:</strong> {{ item.stock }}</p>
+      
+      <p class="text-gray-400 leading-relaxed mb-10">{{ item.description_full }}</p>
+
+      {% if session.get('role') == 'user' %}
+        <!-- Actions -->
+        <div class="actions flex flex-wrap gap-4 mb-8">
+          <a href="{{ url_for('order_page', retailer=item.retailer, item_id=item.item_id) }}"
+             class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-center text-white font-semibold py-3 rounded-lg shadow-lg transition transform hover:scale-105 hover:shadow-indigo-500/50">
+            Buy Now
+          </a>
+          
+          {% if in_cart %}
+            <button id="removeFromCartBtn"
+                    class="flex-1 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-semibold py-3 rounded-lg shadow-lg transition transform hover:scale-105 hover:shadow-red-500/50">
+              Remove from Cart
+            </button>
+          {% else %}
+            <button id="addToCartBtn"
+                    class="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold py-3 rounded-lg shadow-lg transition transform hover:scale-105 hover:shadow-green-500/50">
+              Add to Cart
+            </button>
+          {% endif %}
+        </div>
+
+        <!-- Cart Action Status -->
+        <div id="cartActionStatus" class="text-center text-sm text-gray-300 font-medium"></div>
+
+        <!-- Scripts -->
+        <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+        <script>
+          // Init cart logic
+          setupProductCartButtons("{{ item.item_id }}","{{ item.retailer }}", {{ 'true' if in_cart else 'false' }});
+
+          // GSAP Animations
+          gsap.from(".info-col > *", {
+            opacity: 0,
+            y: 40,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: "power3.out"
+          });
+
+          // Cart status feedback
+          const statusBox = document.getElementById("cartActionStatus");
+          const observer = new MutationObserver(() => {
+            if (statusBox.innerText.includes("added")) {
+              gsap.fromTo(statusBox, { scale: 0.8, color: "#22c55e" }, { scale: 1.1, duration: 0.3, yoyo: true, repeat: 1 });
+            } else if (statusBox.innerText.includes("removed")) {
+              gsap.fromTo(statusBox, { x: -10, color: "#ef4444" }, { x: 10, repeat: 3, duration: 0.1, yoyo: true });
+            }
+          });
+          observer.observe(statusBox, { childList: true });
+
+          // VanillaTilt (3D hover for product image)
+          const script = document.createElement("script");
+          script.src = "https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js";
+          script.onload = () => {
+            VanillaTilt.init(document.querySelector("#productImage"), {
+              max: 15,
+              speed: 400,
+              glare: true,
+              "max-glare": 0.4
+            });
+          };
+          document.body.appendChild(script);
+        </script>
+      {% endif %}
+    </div>
   </div>
 </div>
 {% endblock %}

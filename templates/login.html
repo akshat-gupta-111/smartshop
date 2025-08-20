@@ -1,17 +1,61 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="auth-container">
-  <h2>Login</h2>
-  {% if error %}<div class="error">{{ error }}</div>{% endif %}
-  <form method="POST" action="{{ url_for('login') }}">
-    <input type="text" name="username" placeholder="Username" required />
-    <input type="password" name="password" placeholder="Password" required />
-    <div>
-      <label><input type="radio" name="role" value="user" checked /> User</label>
-      <label><input type="radio" name="role" value="retailer" /> Retailer</label>
+<div class="min-h-screen flex items-center justify-center relative z-10">
+  <div class="grid grid-cols-1 lg:grid-cols-2 w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden bg-gray-900/80 border border-gray-700/50">
+
+    <!-- Left Side -->
+    <div class="bg-gradient-to-br from-orange-500 to-pink-500 p-10 flex flex-col justify-center text-white">
+      <h2 class="text-4xl font-extrabold leading-snug mb-4">
+        Simplify <br> management with <br> our dashboard.
+      </h2>
+      <p class="text-sm text-white/80">
+        Simplify your e-commerce management with our user-friendly admin dashboard.
+      </p>
     </div>
-    <button type="submit">Login</button>
-  </form>
-  <p>New here? <a href="{{ url_for('register') }}">Register</a></p>
+
+    <!-- Right Side -->
+    <div class="p-10 bg-gray-950/70 backdrop-blur-lg">
+      <div class="flex flex-col items-center mb-6">
+        <h3 class="text-2xl font-bold text-white">Welcome Back</h3>
+        <p class="text-gray-400 text-sm">Please login to your account</p>
+      </div>
+
+      {% if error %}
+        <div class="bg-red-500/80 text-white px-4 py-2 rounded mb-4 shadow animate-pulse">
+          {{ error }}
+        </div>
+      {% endif %}
+
+      <form method="POST" action="{{ url_for('login') }}" class="space-y-5">
+        <input type="text" name="username" placeholder="Email address" required
+          class="w-full px-4 py-3 rounded-lg bg-gray-800/70 text-gray-200 placeholder-gray-400 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400 transition">
+
+        <input type="password" name="password" placeholder="Password" required
+          class="w-full px-4 py-3 rounded-lg bg-gray-800/70 text-gray-200 placeholder-gray-400 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400 transition">
+
+        <div class="flex justify-between text-sm text-gray-400">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="role" value="user" checked class="accent-orange-400">
+            <span>User</span>
+          </label>
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="role" value="retailer" class="accent-orange-400">
+            <span>Retailer</span>
+          </label>
+          <a href="#" class="text-orange-400 hover:underline">Forgot password?</a>
+        </div>
+
+        <button type="submit"
+          class="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:opacity-90 text-white font-semibold py-3 rounded-lg shadow-lg transition transform hover:scale-105">
+          Login
+        </button>
+      </form>
+
+      <p class="text-center text-gray-400 mt-6 text-sm">
+        Don’t have an account?
+        <a href="{{ url_for('register') }}" class="text-orange-400 hover:underline">Signup</a>
+      </p>
+    </div>
+  </div>
 </div>
 {% endblock %}

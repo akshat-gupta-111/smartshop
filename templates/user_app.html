@@ -1,38 +1,165 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="layout-app">
-  <div id="div1" class="panel products-panel">
-    <h3>Products</h3>
-    <div class="product-grid">
-      {% for item in items %}
-      <div class="product-card">
-        <img src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}" alt="{{ item.name }}">
-        <h4>{{ item.name }}</h4>
-        <p class="meta">Retailer: {{ item.retailer }} | {{ item.category }}</p>
-        <p>{{ item.description_short }}</p>
-        <a class="btn small" href="{{ url_for('product_page', retailer=item.retailer, item_id=item.item_id) }}">More Info</a>
-      </div>
-      {% endfor %}
+<div class="max-w-7xl mx-auto">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <div class="lg:col-span-2 space-y-8">
+      
+      <section 
+        id="products-panel" 
+        class="main-panel bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-8"
+      >
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+          <div>
+            <h2 class="text-4xl font-extrabold text-white">Explore Products</h2>
+            <p class="text-slate-400 mt-1">Find the best items tailored for you.</p>
+          </div>
+          <div class="relative mt-4 md:mt-0">
+            <input type="text" id="product-search" placeholder="Search products..." class="w-64 pl-10 pr-4 py-2 bg-slate-800/50 border border-slate-700 rounded-full focus:ring-2 focus:ring-indigo-500 focus:outline-none transition text-white">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i data-feather="search" class="w-5 h-5 text-slate-400"></i>
+            </div>
+          </div>
+        </div>
+
+        <div id="product-filters" class="flex flex-wrap gap-2 mb-8">
+          <button data-filter="*" class="is-checked filter-btn">All</button>
+          <button data-filter=".tech" class="filter-btn">Tech</button>
+          <button data-filter=".clothing" class="filter-btn">Clothing</button>
+          <button data-filter=".furniture" class="filter-btn">Furniture</button>
+          <button data-filter=".other" class="filter-btn">Other</button>
+        </div>
+
+        <div class="product-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          
+          {% if items %}
+            {% for i in range(items|length) %}
+            <div class="skeleton-card bg-slate-800/50 rounded-xl p-4 space-y-4">
+              <div class="h-40 bg-slate-700 rounded-lg animate-pulse"></div>
+              <div class="h-6 w-3/4 bg-slate-700 rounded animate-pulse"></div>
+              <div class="h-4 w-1/2 bg-slate-700 rounded animate-pulse"></div>
+              <div class="h-10 w-full bg-slate-700 rounded-lg animate-pulse mt-4"></div>
+            </div>
+            {% endfor %}
+
+            {% for item in items %}
+            <div class="product-card item-card {{ item.category|lower }} bg-slate-900/50 rounded-xl shadow-lg hover:shadow-indigo-500/20 border border-slate-700 hover:border-indigo-500/50 transition-all duration-300 p-4 flex flex-col opacity-0">
+              <img class="h-48 w-full object-cover rounded-lg mb-4" src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}" alt="{{ item.name }}">
+              <h4 class="text-xl font-bold text-slate-100 truncate">{{ item.name }}</h4>
+              <p class="text-sm text-slate-400 my-1">
+                <span class="font-semibold text-indigo-400">{{ item.category }}</span> • by <span class="font-medium">{{ item.retailer }}</span>
+              </p>
+              <p class="text-slate-300 mt-2 flex-grow text-sm">{{ item.description_short }}</p>
+              <a class="w-full text-center mt-4 px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-transform transform hover:scale-105" href="{{ url_for('product_page', retailer=item.retailer, item_id=item.item_id) }}">
+                View Details
+              </a>
+            </div>
+            {% endfor %}
+
+          {% else %}
+            <div class="col-span-1 md:col-span-2 xl:col-span-3 text-center py-12">
+              <i data-feather="package" class="w-16 h-16 mx-auto text-slate-500"></i>
+              <h3 class="mt-4 text-xl font-semibold text-slate-300">No Products Found</h3>
+              <p class="text-slate-500 mt-1">There are currently no products available to view.</p>
+            </div>
+          {% endif %}
+        </div>
+      </section>
+      
+      <section id="support-panels" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="main-panel">
+          {% include "partials/_rating_popup.html" %}
+          <h3 class="panel-title"><i data-feather="star" class="text-amber-400"></i>Testimonials</h3>
+          <ul class="space-y-4 text-slate-300">
+            <li>
+              <div class="flex justify-between mb-1 text-sm font-medium"><span>Excellent</span><span class="text-green-400">{{ counts.excellent or 0 }}</span></div>
+              <div class="w-full bg-slate-700 rounded-full h-2.5"><div class="bg-green-500 h-2.5 rounded-full" style="width: {{ (counts.excellent or 0) / ((counts.excellent or 0) + (counts.good or 0) + (counts.bad or 0) or 1) * 100 }}%"></div></div>
+            </li>
+            <li>
+              <div class="flex justify-between mb-1 text-sm font-medium"><span>Good</span><span class="text-blue-400">{{ counts.good or 0 }}</span></div>
+              <div class="w-full bg-slate-700 rounded-full h-2.5"><div class="bg-blue-500 h-2.5 rounded-full" style="width: {{ (counts.good or 0) / ((counts.excellent or 0) + (counts.good or 0) + (counts.bad or 0) or 1) * 100 }}%"></div></div>
+            </li>
+            <li>
+              <div class="flex justify-between mb-1 text-sm font-medium"><span>Bad</span><span class="text-red-400">{{ counts.bad or 0 }}</span></div>
+              <div class="w-full bg-slate-700 rounded-full h-2.5"><div class="bg-red-500 h-2.5 rounded-full" style="width: {{ (counts.bad or 0) / ((counts.excellent or 0) + (counts.good or 0) + (counts.bad or 0) or 1) * 100 }}%"></div></div>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="main-panel">
+          <h3 class="panel-title"><i data-feather="help-circle" class="text-indigo-400"></i>FAQs</h3>
+          {% include "partials/_faq_section.html" %}
+        </div>
+      </section>
     </div>
-  </div>
-  <div id="div2" class="panel chat-panel">
-    {% include "partials/_chat_window.html" %}
-  </div>
-  <div id="div3" class="panel ratings-panel">
-    {% include "partials/_rating_popup.html" %}
-    <h3>Testimonials</h3>
-    <ul id="ratingCounts">
-      <li>Excellent: <span id="countExcellent">{{ counts.excellent or 0 }}</span></li>
-      <li>Good: <span id="countGood">{{ counts.good or 0 }}</span></li>
-      <li>Bad: <span id="countBad">{{ counts.bad or 0 }}</span></li>
-    </ul>
-  </div>
-  <div id="div4" class="panel faq-panel">
-    {% include "partials/_faq_section.html" %}
+
+    <div class="lg:col-span-1">
+      <div class="sticky top-28">
+        {% include "partials/_chat_window.html" %}
+      </div>
+    </div>
+    
   </div>
 </div>
-<script src="{{ url_for('static', filename='js/utils.js') }}"></script>
-<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
-<script src="{{ url_for('static', filename='js/rating.js') }}"></script>
-<script src="{{ url_for('static', filename='js/faq.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const grid = document.querySelector('.product-grid');
+  // FIX: Only initialize Isotope if the grid element exists and has items
+  if (grid && grid.querySelector('.item-card')) {
+    const iso = new Isotope(grid, {
+      itemSelector: '.item-card',
+      layoutMode: 'fitRows',
+      transitionDuration: '0.6s'
+    });
+
+    // Skeleton Loading Effect
+    setTimeout(() => {
+      document.querySelectorAll('.skeleton-card').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.product-card').forEach(el => {
+        el.style.opacity = 1;
+      });
+      iso.layout();
+    }, 500);
+
+    // Filter Logic
+    const filtersElem = document.querySelector('#product-filters');
+    filtersElem.addEventListener('click', function(event) {
+      if (!event.target.matches('button')) return;
+      const filterValue = event.target.getAttribute('data-filter');
+      iso.arrange({ filter: filterValue });
+      
+      // Update active button state
+      const buttons = filtersElem.querySelectorAll('button');
+      buttons.forEach(btn => {
+          btn.classList.remove('is-checked', 'bg-indigo-600', 'text-white');
+          btn.classList.add('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
+      });
+      event.target.classList.add('is-checked', 'bg-indigo-600', 'text-white');
+      event.target.classList.remove('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
+
+    });
+
+    // Search Logic
+    const searchInput = document.getElementById('product-search');
+    let debounceTimer;
+    searchInput.addEventListener('keyup', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+          const searchValue = searchInput.value.toLowerCase();
+          const activeFilter = filtersElem.querySelector('.is-checked').getAttribute('data-filter');
+          
+          iso.arrange({
+              filter: function(itemElem) {
+                  const name = itemElem.querySelector('h4').textContent.toLowerCase();
+                  const matchesSearch = name.includes(searchValue);
+                  const matchesFilter = activeFilter === '*' || itemElem.matches(activeFilter);
+                  return matchesSearch && matchesFilter;
+              }
+          });
+      }, 300);
+    });
+  }
+});
+</script>
 {% endblock %}

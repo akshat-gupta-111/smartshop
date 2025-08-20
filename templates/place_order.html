@@ -1,52 +1,125 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="order-page">
-  <h2>Place Order</h2>
-  <div class="order-items">
-    <h3>Items</h3>
-    <ul>
+<div class="order-page min-h-screen px-6 lg:px-16 py-10 relative z-10">
+
+  <!-- Page Title -->
+  <h2 class="text-4xl font-bold text-indigo-400 mb-10 text-center tracking-wide">
+    Place Your Order
+  </h2>
+
+  <!-- Order Items -->
+  <div class="order-items bg-gray-900/70 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl p-8 mb-12"
+       data-scroll data-scroll-speed="1">
+    <h3 class="text-2xl font-semibold text-indigo-300 mb-6">Items</h3>
+    <ul class="space-y-6">
       {% for it in items %}
-        <li>
-          <img src="{{ url_for('serve_image', retailer=it.retailer, item_id=it.item_id, filename=it.image_filename) }}" alt="{{ it.name }}">
-          <div class="info">
-            <strong>{{ it.name }}</strong><br>
-            {{ it.category }} - ${{ "%.2f"|format(it.price) }} ({{ it.retailer }})
+        <li class="flex items-center space-x-6 bg-gray-800/70 rounded-xl p-4 shadow-md transform hover:scale-[1.02] transition">
+          <img src="{{ url_for('serve_image', retailer=it.retailer, item_id=it.item_id, filename=it.image_filename) }}"
+               alt="{{ it.name }}"
+               class="w-20 h-20 object-cover rounded-lg border border-gray-700 shadow">
+          <div class="info text-gray-200">
+            <strong class="block text-lg text-indigo-400">{{ it.name }}</strong>
+            <span class="text-gray-400">{{ it.category }}</span>  
+            <p class="text-sm"> ${{ "%.2f"|format(it.price) }} <span class="text-gray-500">({{ it.retailer }})</span></p>
           </div>
         </li>
       {% endfor %}
     </ul>
-    <p class="total">Total: ${{ "%.2f"|format(total) }}</p>
+    <p class="total text-right mt-6 text-xl font-bold text-indigo-300">
+      Total: ${{ "%.2f"|format(total) }}
+    </p>
   </div>
-  <div class="order-form">
-    <h3>Your Details</h3>
-    <form id="orderForm">
-      <input type="text" name="name" placeholder="Full Name" required>
-      <input type="text" name="phone" placeholder="Phone Number" required>
-      <input type="email" name="email" placeholder="Email" required>
-      <textarea name="address" placeholder="Address" required></textarea>
+
+  <!-- Order Form -->
+  <div class="order-form bg-gray-900/70 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl p-8"
+       data-scroll data-scroll-speed="2">
+    <h3 class="text-2xl font-semibold text-indigo-300 mb-6">Your Details</h3>
+    <form id="orderForm" class="space-y-5">
+      <input type="text" name="name" placeholder="Full Name" required
+             class="w-full px-4 py-3 rounded-lg bg-gray-800/70 text-gray-200 placeholder-gray-400 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition">
+      
+      <input type="text" name="phone" placeholder="Phone Number" required
+             class="w-full px-4 py-3 rounded-lg bg-gray-800/70 text-gray-200 placeholder-gray-400 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition">
+
+      <input type="email" name="email" placeholder="Email" required
+             class="w-full px-4 py-3 rounded-lg bg-gray-800/70 text-gray-200 placeholder-gray-400 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition">
+
+      <textarea name="address" placeholder="Address" required
+                class="w-full px-4 py-3 rounded-lg bg-gray-800/70 text-gray-200 placeholder-gray-400 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"></textarea>
+
       <input type="hidden" name="mode" value="{{ mode }}">
       {% if mode == 'single' %}
         <input type="hidden" name="item_id" value="{{ items[0].item_id }}">
         <input type="hidden" name="retailer" value="{{ items[0].retailer }}">
       {% endif %}
-      <button type="submit" class="btn primary">Create Order</button>
+
+      <button type="submit"
+              class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 rounded-lg shadow-lg transition transform hover:scale-105 hover:shadow-indigo-500/50">
+        Create Order
+      </button>
     </form>
-    <div id="orderStatus"></div>
+    <div id="orderStatus" class="mt-6 text-center text-gray-300"></div>
   </div>
-  <div id="paymentSection" class="payment-section hidden">
-    <h3>Payment</h3>
-    <p>Click "Generate QR" to get UPI QR code. Then click "Verify Payment" (placeholder only).</p>
-    <div class="payment-actions">
-      <button id="generateQrBtn" class="btn secondary">Generate QR</button>
-      <button id="verifyPaymentBtn" class="btn secondary" disabled>Verify Payment</button>
+
+  <!-- Payment Section -->
+  <div id="paymentSection"
+       class="payment-section hidden mt-12 bg-gray-900/70 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl p-8"
+       data-scroll data-scroll-speed="3">
+    <h3 class="text-2xl font-semibold text-indigo-300 mb-6">Payment</h3>
+    <p class="text-gray-400 mb-6">Click <span class="text-indigo-400">"Generate QR"</span> to get UPI QR code. Then click <span class="text-indigo-400">"Verify Payment"</span> (placeholder only).</p>
+
+    <div class="payment-actions flex space-x-4 mb-6">
+      <button id="generateQrBtn"
+              class="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg shadow-md transform hover:scale-105 transition">
+        Generate QR
+      </button>
+      <button id="verifyPaymentBtn" disabled
+              class="flex-1 bg-yellow-500 hover:bg-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-lg shadow-md transform hover:scale-105 transition">
+        Verify Payment
+      </button>
     </div>
-    <div id="qrContainer"></div>
-    <div id="verifyStatus"></div>
+
+    <div id="qrContainer" class="flex justify-center mb-6"></div>
+    <div id="verifyStatus" class="text-center text-gray-300"></div>
   </div>
 </div>
+
+<!-- Page Animations -->
 <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
 <script src="{{ url_for('static', filename='js/order.js') }}"></script>
 <script>
+  // Init page logic
   initOrderPage("{{ mode }}");
+
+  // Animate items with GSAP stagger
+  gsap.from(".order-items li", {
+    opacity: 0,
+    y: 40,
+    duration: 0.8,
+    stagger: 0.2,
+    ease: "power3.out"
+  });
+
+  // Animate order form
+  gsap.from(".order-form", {
+    opacity: 0,
+    y: 60,
+    duration: 1,
+    delay: 0.3,
+    ease: "power4.out"
+  });
+
+  // Payment section entrance (when shown)
+  const observer = new MutationObserver(() => {
+    if (!document.getElementById("paymentSection").classList.contains("hidden")) {
+      gsap.from("#paymentSection", {
+        opacity: 0,
+        y: 80,
+        duration: 1,
+        ease: "power4.out"
+      });
+    }
+  });
+  observer.observe(document.getElementById("paymentSection"), { attributes: true });
 </script>
 {% endblock %}

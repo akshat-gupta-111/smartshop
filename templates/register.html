@@ -1,16 +1,107 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="auth-container">
-  <h2>Register</h2>
-  {% if error %}<div class="error">{{ error }}</div>{% endif %}
-  <form method="POST">
-    <input type="text" name="username" placeholder="Username" required />
-    <input type="password" name="password" placeholder="Password" required />
-    <div>
-      <label><input type="radio" name="role" value="user" checked /> User</label>
-      <label><input type="radio" name="role" value="retailer" /> Retailer</label>
+<div class="min-h-screen flex items-center justify-center relative z-10">
+  <div class="grid grid-cols-1 lg:grid-cols-2 w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden bg-gray-900/80 border border-gray-700/50">
+
+    <!-- Left Side -->
+    <div class="bg-gradient-to-br from-green-500 to-teal-500 p-10 flex flex-col justify-center text-white">
+      <h2 class="text-4xl font-extrabold leading-snug mb-4">
+        Register <br> to SmartShop.
+      </h2>
+      <p class="text-sm text-white/80">
+        Create your account to manage your store & customers efficiently.
+      </p>
     </div>
-    <button type="submit">Create Account</button>
-  </form>
+
+    <!-- Right Side -->
+    <div class="p-10 bg-gray-950/70 backdrop-blur-lg">
+      <div class="flex flex-col items-center mb-6">
+        <h1 class="text-3xl font-extrabold text-green-400 mb-2">SmartShop</h1>
+        <h3 class="text-2xl font-bold text-white">Register</h3>
+        <p class="text-gray-400 text-sm">Fill in your details to create account</p>
+      </div>
+
+      {% if error %}
+        <div class="bg-red-500/80 text-white px-4 py-2 rounded mb-4 shadow animate-pulse">
+          {{ error }}
+        </div>
+      {% endif %}
+
+      <form method="POST" action="{{ url_for('register') }}" class="space-y-5">
+        <!-- Username -->
+        <div class="flex items-center bg-gray-800/70 rounded-lg border border-gray-700 px-3">
+          <i data-lucide="user" class="text-gray-400 w-5 h-5"></i>
+          <input type="text" name="username" placeholder="Enter Username" required
+            class="w-full px-3 py-3 bg-transparent text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400 transition">
+        </div>
+
+        <!-- Password -->
+        <div class="flex items-center bg-gray-800/70 rounded-lg border border-gray-700 px-3">
+          <i data-lucide="lock" class="text-gray-400 w-5 h-5"></i>
+          <input type="password" name="password" placeholder="Enter Password" required
+            class="w-full px-3 py-3 bg-transparent text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400 transition">
+        </div>
+
+        <!-- Role Selection -->
+        <div class="bg-gray-800/70 rounded-lg border border-gray-700 px-4 py-3 text-white">
+          <label class="block text-sm text-gray-300 mb-2">Register as:</label>
+          <div class="flex items-center space-x-6">
+            <label class="flex items-center space-x-2">
+              <input type="radio" name="role" value="user" required class="text-green-500 focus:ring-green-500">
+              <span>User</span>
+            </label>
+            <label class="flex items-center space-x-2">
+              <input type="radio" name="role" value="retailer" required class="text-green-500 focus:ring-green-500">
+              <span>Retailer</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit"
+          class="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:opacity-90 text-white font-semibold py-3 rounded-lg shadow-lg transition transform hover:scale-105">
+          Register
+        </button>
+      </form>
+
+      <!-- Already have account -->
+      <p class="text-center text-gray-400 mt-6 text-sm">
+        Already have an account?
+        <a href="#" onclick="redirectToLogin()" class="text-green-400 hover:underline">Login here</a>
+      </p>
+    </div>
+  </div>
 </div>
+
+<!-- JS libraries -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  lucide.createIcons();
+
+  gsap.from(".grid", { 
+    opacity: 0, 
+    y: 50, 
+    duration: 1, 
+    ease: "power2.out" 
+  });
+
+  // API call + redirect for login
+  function redirectToLogin() {
+    fetch("{{ url_for('login') }}", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }).then(response => {
+      if (response.ok) {
+        window.location.href = "{{ url_for('login') }}";
+      } else {
+        alert("Unable to connect to login page.");
+      }
+    }).catch(err => {
+      console.error(err);
+      alert("Something went wrong.");
+    });
+  }
+</script>
 {% endblock %}
