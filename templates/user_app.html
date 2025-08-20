@@ -44,7 +44,23 @@
 
             {% for item in items %}
             <div class="product-card item-card {{ item.category|lower }} bg-slate-900/50 rounded-xl shadow-lg hover:shadow-indigo-500/20 border border-slate-700 hover:border-indigo-500/50 transition-all duration-300 p-4 flex flex-col opacity-0">
-              <img class="h-48 w-full object-cover rounded-lg mb-4" src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}" alt="{{ item.name }}">
+              {% if item.image_filename %}
+                {% if item.image_filename.startswith('http') %}
+                  <img class="h-48 w-full object-cover rounded-lg mb-4" src="{{ item.image_filename }}" alt="{{ item.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <div class="h-48 w-full bg-slate-700 rounded-lg mb-4 items-center justify-center" style="display: none;">
+                    <span class="text-slate-500">Image Failed to Load</span>
+                  </div>
+                {% else %}
+                  <img class="h-48 w-full object-cover rounded-lg mb-4" src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}" alt="{{ item.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <div class="h-48 w-full bg-slate-700 rounded-lg mb-4 items-center justify-center" style="display: none;">
+                    <span class="text-slate-500">Image Failed to Load</span>
+                  </div>
+                {% endif %}
+              {% else %}
+                <div class="h-48 w-full bg-slate-700 rounded-lg mb-4 flex items-center justify-center">
+                  <span class="text-slate-500">No Image</span>
+                </div>
+              {% endif %}
               <h4 class="text-xl font-bold text-slate-100 truncate">{{ item.name }}</h4>
               <p class="text-sm text-slate-400 my-1">
                 <span class="font-semibold text-indigo-400">{{ item.category }}</span> • by <span class="font-medium">{{ item.retailer }}</span>

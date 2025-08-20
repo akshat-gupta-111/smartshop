@@ -35,10 +35,18 @@ from config import (
 )
 
 app = Flask(__name__)
-app.secret_key = "AIzaSyCFR2bIGyl6BZzxwCrFZ1zH6GSfofUdbZc"  # Replace in production
+app.secret_key = os.environ.get('SECRET_KEY', 'your-default-secret-key-change-in-production')  # Use environment variable
 
-DATA_DIR = Path(BASE_DIR) / "data"
-UPLOAD_DIR = Path(BASE_DIR) / "retailer_uploads"
+# Create a writable directory for Vercel
+if os.environ.get('VERCEL'):
+    # In Vercel, only /tmp is writable
+    DATA_DIR = Path("/tmp/data")
+    UPLOAD_DIR = Path("/tmp/retailer_uploads")
+else:
+    # Local development
+    DATA_DIR = Path(BASE_DIR) / "data"
+    UPLOAD_DIR = Path(BASE_DIR) / "retailer_uploads"
+
 DATA_DIR.mkdir(exist_ok=True)
 UPLOAD_DIR.mkdir(exist_ok=True)
 
@@ -82,7 +90,31 @@ def now_iso():
 
 
 def ensure_files():
-    load_json(AUTH_FILE, {"accounts": {}})
+    auth_data = load_json(AUTH_FILE, {"accounts": {}})
+    
+    # Add guest accounts if they don't exist
+    if "guest_user" not in auth_data["accounts"]:
+        auth_data["accounts"]["guest_user"] = {
+            "username": "guest_user",
+            "role": "user",
+            "password": "guest123",
+            "created_at": now_iso(),
+            "last_login": None,
+            "profile": {"is_guest": True},
+        }
+    
+    if "guest_retailer" not in auth_data["accounts"]:
+        auth_data["accounts"]["guest_retailer"] = {
+            "username": "guest_retailer",
+            "role": "retailer",
+            "password": "guest123",
+            "created_at": now_iso(),
+            "last_login": None,
+            "profile": {"is_guest": True},
+        }
+    
+    save_json(AUTH_FILE, auth_data)
+    
     load_json(
         COUNT_FILE,
         {
@@ -125,6 +157,11 @@ def ensure_files():
 
 
 ensure_files()
+
+
+@app.route("/health")
+def health_check():
+    return jsonify({"status": "healthy", "timestamp": now_iso()})
 
 
 @app.context_processor
@@ -192,17 +229,20 @@ def get_item(retailer, item_id):
     return None
 
 
-def save_item(retailer, item_data, image_file):
+def save_item(retailer, item_data, image_url=None):
     item_id = str(uuid.uuid4())
     item_folder = UPLOAD_DIR / retailer / item_id
     item_folder.mkdir(parents=True, exist_ok=True)
-    ext = ""
-    if image_file and "." in image_file.filename:
-        ext = image_file.filename.rsplit(".", 1)[1].lower()
-    image_name = f"{item_id}.{ext}" if ext else f"{item_id}.img"
-    if image_file:
-        image_path = item_folder / image_name
-        image_file.save(str(image_path))
+    
+    # Instead of saving uploaded files, we save the image URL
+    image_filename = None
+    if image_url and image_url.strip():
+        # Validate that it's a proper URL
+        if image_url.startswith(('http://', 'https://')):
+            image_filename = image_url
+        else:
+            image_filename = f"https://{image_url}" if not image_url.startswith('//') else f"https:{image_url}"
+    
     full_desc = item_data.get("description", "").strip()
     short = (full_desc[:120] + "...") if len(full_desc) > 120 else full_desc
     details = {
@@ -212,7 +252,7 @@ def save_item(retailer, item_data, image_file):
         "category": item_data.get("category", "other"),
         "description_full": full_desc,
         "description_short": short,
-        "image_filename": image_name,
+        "image_filename": image_filename,  # Now stores URL instead of filename
         "price": float(item_data.get("price") or 0),
         "stock": int(item_data.get("stock") or 0),
         "tags": [t.strip() for t in item_data.get("tags", "").split(",") if t.strip()],
@@ -262,6 +302,21 @@ def update_item(retailer_username, item_id, fields: dict):
         )
     set_if("price", float)
     set_if("stock", int)
+    
+    # Handle image URL updates
+    if "image_url" in fields and fields["image_url"] is not None:
+        image_url = fields["image_url"].strip()
+        if image_url:
+            # Validate that it's a proper URL
+            if image_url.startswith(('http://', 'https://')):
+                new_image_filename = image_url
+            else:
+                new_image_filename = f"https://{image_url}" if not image_url.startswith('//') else f"https:{image_url}"
+            
+            if details.get("image_filename") != new_image_filename:
+                details["image_filename"] = new_image_filename
+                changed = True
+    
     if "tags" in fields and fields["tags"] is not None:
         tags_list = [t.strip() for t in str(fields["tags"]).split(",") if t.strip()]
         details["tags"] = tags_list
@@ -440,28 +495,28 @@ def call_gemini_with_history(user_message, product_context, chat_history):
     """
     Calls Gemini Pro with the full conversation history for context-aware responses.
     """
-    if not GEMINI_API_KEY:
-        return "AI features are currently disabled. Please contact support."
-
-    model = genai.GenerativeModel("gemini-pro")
-
-    # The chat object is initialized with the previous conversation for memory
-    chat = model.start_chat(history=chat_history)
-
-    # We construct a message that includes the fresh product context
-    prompt = f"""
-    Based ONLY on the CONTEXT below and our conversation history, provide a conversational answer to my latest message.
-    Do not mention products that are not in the context. If no products match, say so politely.
-
-    CONTEXT FROM STORE INVENTORY:
-    ---
-    {product_context}
-    ---
-    
-    My latest message is: "{user_message}"
-    """
+    if not GEMINI_API_KEY or GEMINI_API_KEY == 'your-default-key-here':
+        return "AI features are currently disabled. Please configure GEMINI_API_KEY environment variable."
 
     try:
+        model = genai.GenerativeModel("gemini-2.5-flash")
+
+        # The chat object is initialized with the previous conversation for memory
+        chat = model.start_chat(history=chat_history)
+
+        # We construct a message that includes the fresh product context
+        prompt = f"""
+        Based ONLY on the CONTEXT below and our conversation history, provide a conversational answer to my latest message.
+        Do not mention products that are not in the context. If no products match, say so politely.
+
+        CONTEXT FROM STORE INVENTORY:
+        ---
+        {product_context}
+        ---
+        
+        My latest message is: "{user_message}"
+        """
+
         response = chat.send_message(prompt)
         return response.text
     except Exception as e:
@@ -644,6 +699,22 @@ def login():
     return redirect(url_for("retailer_store" if role == "retailer" else "user_app"))
 
 
+@app.route("/guest_login/<role>")
+def guest_login(role):
+    if role not in ("user", "retailer"):
+        return redirect(url_for("home"))
+    
+    guest_username = f"guest_{role}"
+    acct = get_account(guest_username)
+    if not acct:
+        return redirect(url_for("home"))
+    
+    session["username"] = guest_username
+    session["role"] = role
+    update_last_login(guest_username)
+    return redirect(url_for("retailer_store" if role == "retailer" else "user_app"))
+
+
 @app.route("/logout")
 def logout():
     session.clear()
@@ -684,9 +755,12 @@ def upload_product():
     if session.get("role") != "retailer":
         return abort(403)
     form = request.form
-    image = request.files.get("image")
+    image_url = form.get("image_url", "").strip()
     if not form.get("name"):
         return jsonify({"ok": False, "error": "Name required"}), 400
+    if not image_url:
+        return jsonify({"ok": False, "error": "Image URL required"}), 400
+    
     item = save_item(
         session["username"],
         {
@@ -697,7 +771,7 @@ def upload_product():
             "stock": form.get("stock", "0"),
             "tags": form.get("tags", ""),
         },
-        image,
+        image_url,
     )
     return jsonify({"ok": True, "item": item})
 
@@ -714,6 +788,11 @@ def product_page(retailer, item_id):
 
 @app.route("/uploads/<retailer>/<item_id>/<filename>")
 def serve_image(retailer, item_id, filename):
+    # First check if it's a URL (for new image handling)
+    if filename.startswith(('http://', 'https://')):
+        return redirect(filename)
+    
+    # For backward compatibility with existing file uploads
     folder = UPLOAD_DIR / retailer / item_id
     if not folder.exists():
         abort(404)
@@ -774,6 +853,7 @@ def update_product_new(item_id):
         ),  # Map description to description_full
         "price": request.form.get("price"),
         "stock": request.form.get("stock"),
+        "image_url": request.form.get("image_url"),  # Handle image URL updates
     }
 
     updated_item = update_item(
@@ -981,15 +1061,26 @@ def assistant_chat():
             if any(word in item_text for word in search_words):
                 relevant_items.append(item)
 
-    # Step 3: Augment - Create a context string for the AI
+    # Step 3: Augment - Create a context string for the AI with product links
     product_context = "No specific products found for that query. You can ask the user for more details, like their budget or preferred features."
     if relevant_items:
         product_context = "Here are some relevant products from the store:\n\n"
         for item in relevant_items[:5]:  # Limit context to 5 items to keep it focused
-            product_context += f"- Name: {item['name']}\n  Price: ${item.get('price', 0):.2f}\n  Description: {item['description_short']}\n\n"
+            product_url = f"/product/{item['retailer']}/{item['item_id']}"
+            product_context += f"- **{item['name']}** (${item.get('price', 0):.2f})\n"
+            product_context += f"  Description: {item['description_short']}\n"
+            product_context += f"  Product Page: {product_url}\n\n"
 
     # Step 4: Generate - Get a conversational response from Gemini using the history
     ai_response = call_gemini_with_history(user_message, product_context, chat_history)
+    
+    # Step 5: Enhance AI response with clickable product links
+    if relevant_items:
+        ai_response += "\n\n**Here are the recommended products:**\n"
+        for item in relevant_items[:3]:  # Show top 3 recommendations
+            product_url = f"/product/{item['retailer']}/{item['item_id']}"
+            ai_response += f"\n🔗 [{item['name']}]({product_url}) - ${item.get('price', 0):.2f}\n"
+            ai_response += f"   *{item['description_short']}*\n"
 
     # Update the history with the new turn
     chat_history.append({"role": "user", "parts": [{"text": user_message}]})

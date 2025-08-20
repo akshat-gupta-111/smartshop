@@ -61,25 +61,17 @@
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-slate-300 mb-2">Product Image</label>
-            <div id="imageUploadBox" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-600 border-dashed rounded-xl transition-colors duration-300 hover:border-indigo-500 hover:bg-slate-800/50">
-              <div id="uploadInitialState" class="space-y-1 text-center">
-                <i data-feather="image" class="mx-auto h-12 w-12 text-slate-500"></i>
-                <div class="flex text-sm text-slate-400">
-                  <label for="file-upload" class="relative cursor-pointer rounded-md font-medium text-indigo-400 hover:text-indigo-300">
-                    <span>Upload a file</span>
-                    <input id="file-upload" name="image" type="file" class="sr-only" accept="image/*" onchange="previewImage(event)" required>
-                  </label>
-                  <p class="pl-1">or drag and drop</p>
-                </div>
-                <p class="text-xs text-slate-500">PNG, JPG, GIF up to 10MB</p>
-              </div>
-              <div id="imagePreview" class="hidden relative w-full max-w-sm mx-auto">
-                <img id="previewImg" class="w-full h-auto max-h-64 object-contain rounded-lg" />
-                <button type="button" id="removeImageBtn" class="absolute -top-2 -right-2 bg-slate-700 rounded-full p-1 shadow-lg text-red-400 hover:bg-slate-600">
-                    <i data-feather="x" class="w-5 h-5"></i>
-                </button>
-              </div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Product Image URL</label>
+            <div class="relative">
+              <input type="url" id="image_url" name="image_url" class="peer block w-full pl-10 pb-2.5 pt-4 text-sm text-slate-100 bg-slate-800 rounded-lg border-2 border-slate-600 appearance-none focus:outline-none focus:ring-0 focus:border-indigo-500" placeholder="https://example.com/image.jpg" required />
+              <label for="image_url" class="absolute text-sm text-slate-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-slate-800 px-2 left-1 peer-focus:px-2 peer-focus:text-indigo-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4">Image URL</label>
+              <div class="absolute top-1/2 -translate-y-1/2 left-3 text-slate-500 peer-focus:text-indigo-400 w-5 h-5"><i data-feather="link"></i></div>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Paste an image URL from Google Images or any other source</p>
+            
+            <!-- Image Preview -->
+            <div id="imagePreviewContainer" class="mt-4 hidden">
+              <img id="imagePreview" class="w-full max-w-sm h-auto max-h-64 object-contain rounded-lg border border-slate-600" />
             </div>
           </div>
 
@@ -106,7 +98,23 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="retailerProducts">
             {% for item in items %}
             <div class="bg-slate-900/50 border border-slate-700 rounded-xl overflow-hidden hover:shadow-2xl hover:border-indigo-500/50 transition-all duration-300" data-item-id="{{ item.item_id }}">
-                <img src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}" alt="{{ item.name }}" class="w-full h-48 object-cover">
+                {% if item.image_filename %}
+                  {% if item.image_filename.startswith('http') %}
+                    <img src="{{ item.image_filename }}" alt="{{ item.name }}" class="w-full h-48 object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="w-full h-48 bg-slate-700 items-center justify-center" style="display: none;">
+                      <span class="text-slate-500">Image Failed to Load</span>
+                    </div>
+                  {% else %}
+                    <img src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}" alt="{{ item.name }}" class="w-full h-48 object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="w-full h-48 bg-slate-700 items-center justify-center" style="display: none;">
+                      <span class="text-slate-500">Image Failed to Load</span>
+                    </div>
+                  {% endif %}
+                {% else %}
+                  <div class="w-full h-48 bg-slate-700 flex items-center justify-center">
+                    <span class="text-slate-500">No Image</span>
+                  </div>
+                {% endif %}
                 <div class="p-5">
                     <h4 class="text-lg font-semibold text-slate-100 truncate">{{ item.name }}</h4>
                     <p class="text-sm text-slate-400 mt-1">{{ item.category }} • ${{ "%.2f"|format(item.price) }} • Stock: {{ item.stock }}</p>
@@ -136,6 +144,10 @@
                 <div>
                     <label for="editDescription" class="block text-sm font-medium mb-1">Description</label>
                     <textarea id="editDescription" name="description" rows="3" class="w-full px-3 py-2 border border-slate-600 bg-slate-800 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required></textarea>
+                </div>
+                <div>
+                    <label for="editImageUrl" class="block text-sm font-medium mb-1">Image URL</label>
+                    <input type="url" id="editImageUrl" name="image_url" class="w-full px-3 py-2 border border-slate-600 bg-slate-800 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com/image.jpg">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -188,48 +200,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- IMAGE PREVIEW AND DRAG-DROP SCRIPT ---
-    const uploadBox = document.getElementById('imageUploadBox');
-    const initialState = document.getElementById('uploadInitialState');
-    const previewDiv = document.getElementById('imagePreview');
-    const previewImg = document.getElementById('previewImg');
-    const fileInput = document.getElementById('file-upload');
-    const removeImageBtn = document.getElementById('removeImageBtn');
+    // --- IMAGE URL PREVIEW SCRIPT ---
+    const imageUrlInput = document.getElementById('image_url');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    const imagePreview = document.getElementById('imagePreview');
 
-    window.previewImage = function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            initialState.classList.add("hidden");
-            previewDiv.classList.remove("hidden");
-            previewImg.src = URL.createObjectURL(file);
-            previewImg.onload = () => { URL.revokeObjectURL(previewImg.src); }
-        }
-    }
-
-    if (removeImageBtn) {
-        removeImageBtn.addEventListener('click', () => {
-            fileInput.value = "";
-            previewDiv.classList.add("hidden");
-            initialState.classList.remove("hidden");
-        });
-    }
-
-    if (uploadBox) {
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadBox.addEventListener(eventName, e => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        });
-        ['dragenter', 'dragover'].forEach(eventName => {
-            uploadBox.addEventListener(eventName, () => { uploadBox.classList.add('border-indigo-500', 'bg-slate-800/50'); });
-        });
-        ['dragleave', 'drop'].forEach(eventName => {
-            uploadBox.addEventListener(eventName, () => { uploadBox.classList.remove('border-indigo-500', 'bg-slate-800/50'); });
-        });
-        uploadBox.addEventListener('drop', e => {
-            fileInput.files = e.dataTransfer.files;
-            previewImage({ target: fileInput });
+    if (imageUrlInput) {
+        imageUrlInput.addEventListener('input', function() {
+            const url = this.value.trim();
+            if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+                imagePreview.src = url;
+                imagePreview.onload = function() {
+                    imagePreviewContainer.classList.remove('hidden');
+                };
+                imagePreview.onerror = function() {
+                    imagePreviewContainer.classList.add('hidden');
+                };
+            } else {
+                imagePreviewContainer.classList.add('hidden');
+            }
         });
     }
 });

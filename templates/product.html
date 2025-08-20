@@ -10,10 +10,31 @@
 
     <!-- Product Image -->
     <div class="image-col flex justify-center" data-scroll data-scroll-speed="1">
-      <img src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}"
-           alt="{{ item.name }}"
-           id="productImage"
-           class="w-full max-w-md rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.4)] border border-gray-700/60 bg-gray-900/70 backdrop-blur-lg transform transition duration-500 hover:scale-105 hover:shadow-indigo-500/70">
+      {% if item.image_filename %}
+        {% if item.image_filename.startswith('http') %}
+          <img src="{{ item.image_filename }}"
+               alt="{{ item.name }}"
+               id="productImage"
+               class="w-full max-w-md rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.4)] border border-gray-700/60 bg-gray-900/70 backdrop-blur-lg transform transition duration-500 hover:scale-105 hover:shadow-indigo-500/70"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="w-full max-w-md h-96 rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.4)] border border-gray-700/60 bg-gray-900/70 backdrop-blur-lg items-center justify-center" style="display: none;">
+            <span class="text-gray-500 text-xl">Image Failed to Load</span>
+          </div>
+        {% else %}
+          <img src="{{ url_for('serve_image', retailer=item.retailer, item_id=item.item_id, filename=item.image_filename) }}"
+               alt="{{ item.name }}"
+               id="productImage"
+               class="w-full max-w-md rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.4)] border border-gray-700/60 bg-gray-900/70 backdrop-blur-lg transform transition duration-500 hover:scale-105 hover:shadow-indigo-500/70"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="w-full max-w-md h-96 rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.4)] border border-gray-700/60 bg-gray-900/70 backdrop-blur-lg items-center justify-center" style="display: none;">
+            <span class="text-gray-500 text-xl">Image Failed to Load</span>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="w-full max-w-md h-96 rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.4)] border border-gray-700/60 bg-gray-900/70 backdrop-blur-lg flex items-center justify-center">
+          <span class="text-gray-500 text-xl">No Image Available</span>
+        </div>
+      {% endif %}
     </div>
 
     <!-- Product Info -->

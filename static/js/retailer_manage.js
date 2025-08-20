@@ -163,6 +163,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('editDescription').value = data.item.description;
                 document.getElementById('editPrice').value = data.item.price;
                 document.getElementById('editStock').value = data.item.stock;
+                
+                // Handle image URL - check if it's a URL or filename
+                const imageUrl = data.item.image_filename || '';
+                if (imageUrl.startsWith('http')) {
+                    document.getElementById('editImageUrl').value = imageUrl;
+                } else {
+                    document.getElementById('editImageUrl').value = '';
+                }
 
                 // Show the modal
                 editModal.classList.remove('hidden');

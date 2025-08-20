@@ -308,6 +308,34 @@
       "question": "how can i purchase",
       "answer": "Open a product and click Request Purchase. I can help only with platform usage, accounts, products, and purchase requests.",
       "ts": "2025-08-20T04:39:18Z"
+    },
+    {
+      "id": "ee928dc2-33a9-4543-b9cc-a6720927c730",
+      "user": "Akshat111",
+      "question": "tell me about how do i buy",
+      "answer": "To buy, open a product and click Request Purchase. This initiates the purchase flow. I can help only with platform usage, accounts, products, and purchase requests.",
+      "ts": "2025-08-20T05:42:33Z"
+    },
+    {
+      "id": "76a2ccbf-634b-4b5e-9a1e-37282b465bb1",
+      "user": "Akshat111",
+      "question": "how to list product",
+      "answer": "Retailers upload products from the store panel within their account. Is there anything else I can help you with regarding listing products or managing your account?",
+      "ts": "2025-08-20T05:44:02Z"
+    },
+    {
+      "id": "970b9c7d-03c9-4d45-ab00-938d1ee5d0b4",
+      "user": "Akshat111",
+      "question": "HEY HELP ME WITH PRODUCT LISTING",
+      "answer": "Retailers upload products from the store panel. Ensure your product images and descriptions are clear and accurate to attract buyers. If you encounter any issues during the upload, please contact support via the contact form.\n\nI can help only with platform usage, accounts, products, and purchase requests.",
+      "ts": "2025-08-20T07:58:04Z"
+    },
+    {
+      "id": "be43ab71-b633-4999-94ff-d3be9dd89259",
+      "user": "guest_user",
+      "question": "how do i purchase",
+      "answer": "Open a product and click Request Purchase. I can help only with platform usage, accounts, products, and purchase requests.",
+      "ts": "2025-08-20T08:21:17Z"
     }
   ]
 }

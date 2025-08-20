@@ -51,6 +51,46 @@
         </div>
     </div>
 
+    <!-- Rating Popup -->
+    <div 
+      id="ratingPopup" 
+      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center hidden z-50"
+    >
+      <div class="bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-2xl border border-gray-200 w-80 text-center">
+        <p class="text-lg font-semibold text-gray-800 mb-4">⭐ How was the recommendation?</p>
+
+        <!-- Rating Buttons -->
+        <div class="rating-buttons flex justify-center gap-3 mb-4">
+          <button 
+            data-rate="excellent" 
+            class="px-4 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white shadow transition"
+          >
+            Excellent
+          </button>
+          <button 
+            data-rate="good" 
+            class="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white shadow transition"
+          >
+            Good
+          </button>
+          <button 
+            data-rate="bad" 
+            class="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white shadow transition"
+          >
+            Bad
+          </button>
+        </div>
+
+        <!-- Close Button -->
+        <button 
+          id="closeRatingPopup" 
+          class="mt-2 px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-700 shadow-sm transition"
+        >
+          ✖ Close
+        </button>
+      </div>
+    </div>
+
     <script>
         // ===============================================================
         // =========== JAVASCRIPT LOGIC Synced with app.py ===============
@@ -62,12 +102,13 @@
 
         // This variable will store the session ID for the entire conversation.
         let currentChatSessionId = null;
+        let ratingTimer = null;
 
         const addMessage = (message, sender) => {
-            const sanitizedMessage = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
             let messageHtml = '';
             
             if (sender === 'user') {
+                const sanitizedMessage = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 messageHtml = `
                     <div class="flex items-end gap-3 justify-end">
                         <div class="p-3 rounded-xl bg-indigo-600 text-white max-w-xs">
@@ -76,7 +117,15 @@
                     </div>
                 `;
             } else { // Assistant's message
-                const formattedMessage = sanitizedMessage.replace(/\n/g, "<br>");
+                // Convert markdown links to clickable HTML links
+                let formattedMessage = message
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-indigo-300 hover:text-indigo-200 underline" target="_blank" rel="noopener">$1</a>')
+                    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+                    .replace(/\n/g, "<br>");
+                
                 messageHtml = `
                     <div class="flex items-end gap-3 justify-start">
                         <div class="p-3 rounded-xl bg-slate-800 text-slate-200 max-w-xs">
@@ -88,6 +137,14 @@
             chatMessages.insertAdjacentHTML('beforeend', messageHtml);
             chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll
         };
+
+        function scheduleRatingPopup(){
+            clearTimeout(ratingTimer);
+            ratingTimer = setTimeout(()=>{
+                const popup = document.getElementById('ratingPopup');
+                if(popup) popup.classList.remove('hidden');
+            }, 5000);
+        }
         
         const showLoadingIndicator = () => {
             const loadingHtml = `
@@ -122,8 +179,8 @@
                 try {
                     // *** THIS IS THE KEY CHANGE ***
                     // We now call your actual Flask backend endpoint.
-                    // Make sure your Flask app is running on http://127.0.0.1:5000
-                    const response = await fetch("http://127.0.0.1:5000/api/assistant_chat", {
+                    // Use relative URL for deployment compatibility
+                    const response = await fetch("/api/assistant_chat", {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         // We send the message AND the current session ID.
@@ -140,6 +197,13 @@
                         addMessage(data.response, 'assistant');
                         // We save the session ID returned by the backend for the next message.
                         currentChatSessionId = data.session_id; 
+                        
+                        // Schedule rating popup if the response seems to be a recommendation
+                        if (data.response.includes('**Here are the recommended products:**') || 
+                            data.response.toLowerCase().includes('recommend') ||
+                            data.response.includes('🔗')) {
+                            scheduleRatingPopup();
+                        }
                     } else {
                         addMessage(data.error || "An error occurred.", 'assistant');
                     }
@@ -171,6 +235,50 @@
 
         // Start the chat when the page loads
         startChat();
+
+        // Rating popup functionality
+        function attachRatingHandlers(){
+            const popup = document.getElementById('ratingPopup');
+            if(!popup) return;
+            
+            popup.addEventListener('click', async (e)=>{
+                if(e.target.matches('[data-rate]')){
+                    const rating = e.target.getAttribute('data-rate');
+                    try {
+                        const response = await fetch('/chat/rate', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ rating: rating })
+                        });
+                        const res = await response.json();
+                        
+                        if(res.ok){
+                            // Update count displays if they exist
+                            const countExcellent = document.getElementById('countExcellent');
+                            const countGood = document.getElementById('countGood');
+                            const countBad = document.getElementById('countBad');
+                            
+                            if(countExcellent) countExcellent.textContent = res.counts.excellent;
+                            if(countGood) countGood.textContent = res.counts.good;
+                            if(countBad) countBad.textContent = res.counts.bad;
+                            
+                            popup.classList.add('hidden');
+                        } else {
+                            alert('Rating error: '+(res.error||''));
+                        }
+                    } catch (error) {
+                        console.error('Rating error:', error);
+                        alert('Failed to submit rating');
+                    }
+                }
+                if(e.target.id === 'closeRatingPopup'){
+                    popup.classList.add('hidden');
+                }
+            });
+        }
+
+        // Initialize rating handlers when DOM is loaded
+        attachRatingHandlers();
     </script>
 </body>
 </html>
