@@ -642,18 +642,23 @@ def create_order(user, items, contact):
 
 
 def generate_qr_base64(data_text: str):
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=6,
-        border=2,
-    )
-    qr.add_data(data_text)
-    qr.make(fit=True)
-    img = qr.make_image(fill_color="black", back_color="white")
-    buf = BytesIO()
-    img.save(buf, format="PNG")
-    return base64.b64encode(buf.getvalue()).decode()
+    try:
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=6,
+            border=2,
+        )
+        qr.add_data(data_text)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        buf = BytesIO()
+        img.save(buf, format="PNG")
+        return base64.b64encode(buf.getvalue()).decode()
+    except Exception as e:
+        print(f"QR generation error: {e}")
+        # Return a simple base64 encoded placeholder image
+        return "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
 
 
 # --------------- Routes: Auth / Pages ---------------
@@ -887,34 +892,42 @@ def cart_page():
 def cart_add():
     if session.get("role") != "user":
         return jsonify({"ok": False, "error": "Not authorized"}), 403
-    data = request.get_json() or {}
-    item_id = data.get("item_id")
-    retailer = data.get("retailer")
-    if not item_id or not retailer:
-        return jsonify({"ok": False, "error": "Missing data"}), 400
-    item = get_item(retailer, item_id)
-    if not item:
-        return jsonify({"ok": False, "error": "Item not found"}), 404
-    cart = session.get("cart", [])
-    if not any(c["item_id"] == item_id and c["retailer"] == retailer for c in cart):
-        cart.append({"item_id": item_id, "retailer": retailer})
-    session["cart"] = cart
-    return jsonify({"ok": True, "count": len(cart)})
+    try:
+        data = request.get_json() or {}
+        item_id = data.get("item_id")
+        retailer = data.get("retailer")
+        if not item_id or not retailer:
+            return jsonify({"ok": False, "error": "Missing data"}), 400
+        item = get_item(retailer, item_id)
+        if not item:
+            return jsonify({"ok": False, "error": "Item not found"}), 404
+        cart = session.get("cart", [])
+        if not any(c["item_id"] == item_id and c["retailer"] == retailer for c in cart):
+            cart.append({"item_id": item_id, "retailer": retailer})
+        session["cart"] = cart
+        return jsonify({"ok": True, "count": len(cart)})
+    except Exception as e:
+        print(f"Cart add error: {e}")
+        return jsonify({"ok": False, "error": "Failed to add to cart"}), 500
 
 
 @app.route("/cart/remove", methods=["POST"])
 def cart_remove():
     if session.get("role") != "user":
         return jsonify({"ok": False, "error": "Not authorized"}), 403
-    data = request.get_json() or {}
-    item_id = data.get("item_id")
-    retailer = data.get("retailer")
-    cart = session.get("cart", [])
-    new_cart = [
-        c for c in cart if not (c["item_id"] == item_id and c["retailer"] == retailer)
-    ]
-    session["cart"] = new_cart
-    return jsonify({"ok": True, "count": len(new_cart)})
+    try:
+        data = request.get_json() or {}
+        item_id = data.get("item_id")
+        retailer = data.get("retailer")
+        cart = session.get("cart", [])
+        new_cart = [
+            c for c in cart if not (c["item_id"] == item_id and c["retailer"] == retailer)
+        ]
+        session["cart"] = new_cart
+        return jsonify({"ok": True, "count": len(new_cart)})
+    except Exception as e:
+        print(f"Cart remove error: {e}")
+        return jsonify({"ok": False, "error": "Failed to remove from cart"}), 500
 
 
 @app.route("/cart/clear", methods=["POST"])
@@ -979,13 +992,17 @@ def order_create():
 
 @app.route("/order/<order_id>/qr")
 def order_qr(order_id):
-    data = load_orders_data()
-    order = next((o for o in data["orders"] if o["order_id"] == order_id), None)
-    if not order:
-        return jsonify({"ok": False, "error": "Order not found"}), 404
-    payload = f"upi://pay?pa={UPI_ID}&pn=SmartShop&tr={order_id}&am={order['total_amount']}&cu=INR"
-    img_b64 = generate_qr_base64(payload)
-    return jsonify({"ok": True, "image": img_b64, "upi_payload": payload})
+    try:
+        data = load_orders_data()
+        order = next((o for o in data["orders"] if o["order_id"] == order_id), None)
+        if not order:
+            return jsonify({"ok": False, "error": "Order not found"}), 404
+        payload = f"upi://pay?pa={UPI_ID}&pn=SmartShop&tr={order_id}&am={order['total_amount']}&cu=INR"
+        img_b64 = generate_qr_base64(payload)
+        return jsonify({"ok": True, "image": img_b64, "upi_payload": payload})
+    except Exception as e:
+        print(f"QR generation error: {e}")
+        return jsonify({"ok": False, "error": "Failed to generate QR code"}), 500
 
 
 @app.route("/order/<order_id>/verify", methods=["POST"])

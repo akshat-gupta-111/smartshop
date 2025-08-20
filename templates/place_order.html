@@ -14,9 +14,29 @@
     <ul class="space-y-6">
       {% for it in items %}
         <li class="flex items-center space-x-6 bg-gray-800/70 rounded-xl p-4 shadow-md transform hover:scale-[1.02] transition">
-          <img src="{{ url_for('serve_image', retailer=it.retailer, item_id=it.item_id, filename=it.image_filename) }}"
-               alt="{{ it.name }}"
-               class="w-20 h-20 object-cover rounded-lg border border-gray-700 shadow">
+          {% if it.image_filename %}
+            {% if it.image_filename.startswith('http') %}
+              <img src="{{ it.image_filename }}"
+                   alt="{{ it.name }}"
+                   class="w-20 h-20 object-cover rounded-lg border border-gray-700 shadow"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <div class="w-20 h-20 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center" style="display: none;">
+                <span class="text-gray-500 text-xs">No Image</span>
+              </div>
+            {% else %}
+              <img src="{{ url_for('serve_image', retailer=it.retailer, item_id=it.item_id, filename=it.image_filename) }}"
+                   alt="{{ it.name }}"
+                   class="w-20 h-20 object-cover rounded-lg border border-gray-700 shadow"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <div class="w-20 h-20 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center" style="display: none;">
+                <span class="text-gray-500 text-xs">No Image</span>
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="w-20 h-20 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center">
+              <span class="text-gray-500 text-xs">No Image</span>
+            </div>
+          {% endif %}
           <div class="info text-gray-200">
             <strong class="block text-lg text-indigo-400">{{ it.name }}</strong>
             <span class="text-gray-400">{{ it.category }}</span>  
