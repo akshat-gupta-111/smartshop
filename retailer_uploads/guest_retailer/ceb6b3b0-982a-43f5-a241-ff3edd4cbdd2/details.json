@@ -1,0 +1,20 @@
+{
+  "item_id": "ceb6b3b0-982a-43f5-a241-ff3edd4cbdd2",
+  "retailer": "guest_retailer",
+  "name": "Board Game Collection",
+  "category": "toys",
+  "description_full": "Collection of 5 classic board games including Monopoly, Scrabble, Chess, Checkers, and Backgammon. Perfect for family game nights.",
+  "description_short": "Collection of 5 classic board games for family entertainment",
+  "price": 59.99,
+  "stock": 45,
+  "tags": [
+    "board games",
+    "family",
+    "entertainment",
+    "classic games",
+    "collection"
+  ],
+  "created_at": "2025-08-21T01:53:01.013296Z",
+  "updated_at": "2025-08-21T01:53:01.013300Z",
+  "image_filename": "https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=500&h=500&fit=crop"
+}

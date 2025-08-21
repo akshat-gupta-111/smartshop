@@ -1,0 +1,20 @@
+{
+  "item_id": "1ea9afc5-1b0b-4353-add0-1d374380c87a",
+  "retailer": "guest_retailer",
+  "name": "Stainless Steel Water Bottle",
+  "category": "home-kitchen",
+  "description_full": "Insulated stainless steel water bottle that keeps drinks cold for 24 hours or hot for 12 hours. BPA-free with leak-proof design.",
+  "description_short": "Insulated stainless steel water bottle with temperature retention",
+  "price": 34.99,
+  "stock": 100,
+  "tags": [
+    "water bottle",
+    "insulated",
+    "stainless steel",
+    "eco-friendly",
+    "bpa-free"
+  ],
+  "created_at": "2025-08-21T01:53:01.013580Z",
+  "updated_at": "2025-08-21T01:53:01.013584Z",
+  "image_filename": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500&h=500&fit=crop"
+}

@@ -7,6 +7,11 @@ import base64
 from io import BytesIO
 import shutil
 from pathlib import Path
+
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import (
     Flask,
     request,

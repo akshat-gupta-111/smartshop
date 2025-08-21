@@ -1,0 +1,20 @@
+{
+  "item_id": "4d42e42e-c107-4250-b50f-dce59e495647",
+  "retailer": "guest_retailer",
+  "name": "MacBook Air M3",
+  "category": "electronics",
+  "description_full": "Ultra-thin laptop with M3 chip, 13.6-inch Liquid Retina display, and all-day battery life. Perfect for work and creativity.",
+  "description_short": "MacBook Air with M3 chip and 13.6-inch display",
+  "price": 1199.0,
+  "stock": 30,
+  "tags": [
+    "laptop",
+    "apple",
+    "macbook",
+    "m3",
+    "productivity"
+  ],
+  "created_at": "2025-08-21T01:53:01.010480Z",
+  "updated_at": "2025-08-21T01:53:01.010485Z",
+  "image_filename": "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/macbook-air-midnight-select-20220606?wid=904&hei=840&fmt=jpeg&qlt=90&.v=1653084303665"
+}

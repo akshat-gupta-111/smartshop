@@ -1,0 +1,20 @@
+{
+  "item_id": "fa3daab3-f1d6-4c0f-8cf1-57f7f2968992",
+  "retailer": "guest_retailer",
+  "name": "Yoga Mat Premium",
+  "category": "sports-fitness",
+  "description_full": "Extra thick 6mm yoga mat with superior grip and cushioning. Made from eco-friendly TPE material with alignment lines.",
+  "description_short": "Premium 6mm yoga mat with superior grip and eco-friendly material",
+  "price": 39.99,
+  "stock": 80,
+  "tags": [
+    "yoga",
+    "fitness",
+    "exercise",
+    "mat",
+    "wellness"
+  ],
+  "created_at": "2025-08-21T01:53:01.012091Z",
+  "updated_at": "2025-08-21T01:53:01.012094Z",
+  "image_filename": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=500&fit=crop"
+}

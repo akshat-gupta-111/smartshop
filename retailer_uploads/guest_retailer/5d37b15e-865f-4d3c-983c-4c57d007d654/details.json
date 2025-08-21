@@ -1,0 +1,20 @@
+{
+  "item_id": "5d37b15e-865f-4d3c-983c-4c57d007d654",
+  "retailer": "guest_retailer",
+  "name": "Digital Art Tablet",
+  "category": "electronics",
+  "description_full": "Professional graphics tablet with 8192 pressure levels, battery-free stylus, and 10x6 inch active area. Perfect for digital art and design.",
+  "description_short": "Professional graphics tablet with pressure-sensitive stylus",
+  "price": 159.99,
+  "stock": 40,
+  "tags": [
+    "graphics tablet",
+    "digital art",
+    "design",
+    "stylus",
+    "creative"
+  ],
+  "created_at": "2025-08-21T01:53:01.013984Z",
+  "updated_at": "2025-08-21T01:53:01.013990Z",
+  "image_filename": "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=500&h=500&fit=crop"
+}

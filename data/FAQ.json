@@ -336,6 +336,20 @@
       "question": "how do i purchase",
       "answer": "Open a product and click Request Purchase. I can help only with platform usage, accounts, products, and purchase requests.",
       "ts": "2025-08-20T08:21:17Z"
+    },
+    {
+      "id": "2bbd7a77-4cd9-4ef0-92c0-5acc1fdc745d",
+      "user": "guest_user",
+      "question": "how to buy",
+      "answer": "I can help only with platform usage, accounts, products, and purchase requests.",
+      "ts": "2025-08-21T02:28:01Z"
+    },
+    {
+      "id": "0766c80c-94dd-4f85-aa09-767e18d32544",
+      "user": "guest_user",
+      "question": "how can i buy",
+      "answer": "Open a product and click Request Purchase. I can help only with platform usage, accounts, products, and purchase requests.",
+      "ts": "2025-08-21T02:30:18Z"
     }
   ]
 }

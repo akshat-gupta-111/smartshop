@@ -109,6 +109,26 @@
       "status": "pending_payment",
       "total_amount": 45.0,
       "created_at": "2025-08-16T05:01:06Z"
+    },
+    {
+      "order_id": "3d08f32a-1304-4548-9dfd-b426ef5f6172",
+      "user": "guest_user",
+      "items": [
+        {
+          "item_id": "9b7ea2d2-773c-459c-bc21-12a56cfe8a79",
+          "retailer": "guest_retailer",
+          "price": 369.99
+        }
+      ],
+      "contact": {
+        "name": "AKSHAT GUPTA",
+        "phone": "9105211531",
+        "email": "examp@gmail.com",
+        "address": "aaaa"
+      },
+      "status": "pending_payment",
+      "total_amount": 369.99,
+      "created_at": "2025-08-21T02:30:38Z"
     }
   ]
 }

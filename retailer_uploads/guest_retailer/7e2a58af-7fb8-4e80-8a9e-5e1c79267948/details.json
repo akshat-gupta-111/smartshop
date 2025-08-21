@@ -1,0 +1,20 @@
+{
+  "item_id": "7e2a58af-7fb8-4e80-8a9e-5e1c79267948",
+  "retailer": "guest_retailer",
+  "name": "Bluetooth Speaker Portable",
+  "category": "electronics",
+  "description_full": "Compact Bluetooth speaker with 360-degree sound, 20-hour battery life, and waterproof design. Perfect for outdoor adventures.",
+  "description_short": "Portable Bluetooth speaker with 360-degree sound and waterproof design",
+  "price": 79.99,
+  "stock": 70,
+  "tags": [
+    "bluetooth speaker",
+    "portable",
+    "waterproof",
+    "wireless",
+    "audio"
+  ],
+  "created_at": "2025-08-21T01:53:01.014543Z",
+  "updated_at": "2025-08-21T01:53:01.014547Z",
+  "image_filename": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500&h=500&fit=crop"
+}

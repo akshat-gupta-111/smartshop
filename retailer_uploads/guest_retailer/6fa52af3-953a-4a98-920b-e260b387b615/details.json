@@ -1,0 +1,19 @@
+{
+  "item_id": "6fa52af3-953a-4a98-920b-e260b387b615",
+  "retailer": "guest_retailer",
+  "name": "The Great Gatsby",
+  "category": "books",
+  "description_full": "Classic American novel by F. Scott Fitzgerald. A timeless story of love, wealth, and the American Dream set in the Jazz Age.",
+  "description_short": "The Great Gatsby by F. Scott Fitzgerald - Classic American novel",
+  "price": 12.99,
+  "stock": 200,
+  "tags": [
+    "book",
+    "classic",
+    "fiction",
+    "american literature"
+  ],
+  "created_at": "2025-08-21T01:53:01.011203Z",
+  "updated_at": "2025-08-21T01:53:01.011206Z",
+  "image_filename": "https://m.media-amazon.com/images/I/81af+MCATTL._AC_UF1000,1000_QL80_.jpg"
+}

@@ -1,0 +1,20 @@
+{
+  "item_id": "298b34a4-51e5-4eb7-9b9b-090a230be216",
+  "retailer": "guest_retailer",
+  "name": "Coffee Maker Drip",
+  "category": "home-kitchen",
+  "description_full": "Programmable drip coffee maker with 12-cup capacity, auto shut-off, and brew strength control. Includes reusable filter.",
+  "description_short": "Programmable 12-cup drip coffee maker with brew strength control",
+  "price": 89.99,
+  "stock": 55,
+  "tags": [
+    "coffee maker",
+    "drip",
+    "programmable",
+    "kitchen appliance",
+    "brewing"
+  ],
+  "created_at": "2025-08-21T01:53:01.014294Z",
+  "updated_at": "2025-08-21T01:53:01.014298Z",
+  "image_filename": "https://images.unsplash.com/photo-1517256673644-36ad11246d21?w=500&h=500&fit=crop"
+}

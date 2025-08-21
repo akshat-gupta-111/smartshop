@@ -1,0 +1,19 @@
+{
+  "item_id": "3d305dec-eba2-457e-a23e-f5a3e7de50ae",
+  "retailer": "guest_retailer",
+  "name": "Nike Air Max 270",
+  "category": "fashion",
+  "description_full": "Comfortable running shoes with Max Air heel unit for lightweight cushioning. Features breathable mesh upper and durable rubber outsole.",
+  "description_short": "Nike Air Max 270 running shoes with Max Air cushioning",
+  "price": 150.0,
+  "stock": 100,
+  "tags": [
+    "shoes",
+    "running",
+    "nike",
+    "sports"
+  ],
+  "created_at": "2025-08-21T01:53:01.009915Z",
+  "updated_at": "2025-08-21T01:53:01.009922Z",
+  "image_filename": "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/awjogtdnqxniqqk0wpgf/air-max-270-shoes-KkLcGR.png"
+}

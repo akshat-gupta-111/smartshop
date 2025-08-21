@@ -1,0 +1,20 @@
+{
+  "item_id": "54c20a17-99be-4497-9347-8ecddf07c3ef",
+  "retailer": "guest_retailer",
+  "name": "Instant Pot Duo 7-in-1",
+  "category": "home-kitchen",
+  "description_full": "7-in-1 electric pressure cooker that functions as pressure cooker, slow cooker, rice cooker, steamer, saut\u00e9 pan, yogurt maker, and warmer.",
+  "description_short": "Instant Pot Duo 7-in-1 electric pressure cooker",
+  "price": 89.99,
+  "stock": 60,
+  "tags": [
+    "kitchen",
+    "appliance",
+    "pressure cooker",
+    "instant pot",
+    "cooking"
+  ],
+  "created_at": "2025-08-21T01:53:01.011442Z",
+  "updated_at": "2025-08-21T01:53:01.011446Z",
+  "image_filename": "https://m.media-amazon.com/images/I/71V1wXjkMkL._AC_SL1500_.jpg"
+}

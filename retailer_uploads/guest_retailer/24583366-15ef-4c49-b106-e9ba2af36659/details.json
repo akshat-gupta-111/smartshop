@@ -1,0 +1,20 @@
+{
+  "item_id": "24583366-15ef-4c49-b106-e9ba2af36659",
+  "retailer": "guest_retailer",
+  "name": "Essential Oils Set",
+  "category": "health-beauty",
+  "description_full": "Set of 6 pure essential oils including lavender, eucalyptus, peppermint, tea tree, lemon, and orange. Perfect for aromatherapy and relaxation.",
+  "description_short": "Set of 6 pure essential oils for aromatherapy and wellness",
+  "price": 49.99,
+  "stock": 85,
+  "tags": [
+    "essential oils",
+    "aromatherapy",
+    "wellness",
+    "natural",
+    "relaxation"
+  ],
+  "created_at": "2025-08-21T01:53:01.014771Z",
+  "updated_at": "2025-08-21T01:53:01.014775Z",
+  "image_filename": "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&h=500&fit=crop"
+}

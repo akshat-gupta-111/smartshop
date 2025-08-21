@@ -1,0 +1,20 @@
+{
+  "item_id": "8ab89e36-5700-4350-8b6b-80cb307b4944",
+  "retailer": "guest_retailer",
+  "name": "Adidas Ultraboost 22",
+  "category": "fashion",
+  "description_full": "Premium running shoes with Boost midsole technology, Primeknit upper, and Continental rubber outsole for superior traction.",
+  "description_short": "Adidas Ultraboost 22 with Boost technology",
+  "price": 180.0,
+  "stock": 75,
+  "tags": [
+    "shoes",
+    "running",
+    "adidas",
+    "boost",
+    "sports"
+  ],
+  "created_at": "2025-08-21T01:53:01.010712Z",
+  "updated_at": "2025-08-21T01:53:01.010715Z",
+  "image_filename": "https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/fbaf991a78bc4896a3e9ad7800abcec6_9366/Ultraboost_22_Shoes_Black_GZ0127_01_standard.jpg"
+}

@@ -14,20 +14,6 @@
             <h2 class="text-4xl font-extrabold text-white">Explore Products</h2>
             <p class="text-slate-400 mt-1">Find the best items tailored for you.</p>
           </div>
-          <div class="relative mt-4 md:mt-0">
-            <input type="text" id="product-search" placeholder="Search products..." class="w-64 pl-10 pr-4 py-2 bg-slate-800/50 border border-slate-700 rounded-full focus:ring-2 focus:ring-indigo-500 focus:outline-none transition text-white">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <i data-feather="search" class="w-5 h-5 text-slate-400"></i>
-            </div>
-          </div>
-        </div>
-
-        <div id="product-filters" class="flex flex-wrap gap-2 mb-8">
-          <button data-filter="*" class="is-checked filter-btn">All</button>
-          <button data-filter=".tech" class="filter-btn">Tech</button>
-          <button data-filter=".clothing" class="filter-btn">Clothing</button>
-          <button data-filter=".furniture" class="filter-btn">Furniture</button>
-          <button data-filter=".other" class="filter-btn">Other</button>
         </div>
 
         <div class="product-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -43,7 +29,7 @@
             {% endfor %}
 
             {% for item in items %}
-            <div class="product-card item-card {{ item.category|lower }} bg-slate-900/50 rounded-xl shadow-lg hover:shadow-indigo-500/20 border border-slate-700 hover:border-indigo-500/50 transition-all duration-300 p-4 flex flex-col opacity-0">
+            <div class="product-card item-card {{ item.category|lower }} bg-slate-900/50 rounded-xl shadow-lg hover:shadow-indigo-500/20 border border-slate-700 hover:border-indigo-500/50 transition-all duration-300 p-4 flex flex-col" style="opacity: 0;">
               {% if item.image_filename %}
                 {% if item.image_filename.startswith('http') %}
                   <img class="h-48 w-full object-cover rounded-lg mb-4" src="{{ item.image_filename }}" alt="{{ item.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -120,62 +106,14 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const grid = document.querySelector('.product-grid');
-  // FIX: Only initialize Isotope if the grid element exists and has items
-  if (grid && grid.querySelector('.item-card')) {
-    const iso = new Isotope(grid, {
-      itemSelector: '.item-card',
-      layoutMode: 'fitRows',
-      transitionDuration: '0.6s'
+  // Simple product loading without Isotope
+  setTimeout(() => {
+    // Hide skeleton cards and show products
+    document.querySelectorAll('.skeleton-card').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.product-card').forEach(el => {
+      el.style.opacity = '1';
     });
-
-    // Skeleton Loading Effect
-    setTimeout(() => {
-      document.querySelectorAll('.skeleton-card').forEach(el => el.style.display = 'none');
-      document.querySelectorAll('.product-card').forEach(el => {
-        el.style.opacity = 1;
-      });
-      iso.layout();
-    }, 500);
-
-    // Filter Logic
-    const filtersElem = document.querySelector('#product-filters');
-    filtersElem.addEventListener('click', function(event) {
-      if (!event.target.matches('button')) return;
-      const filterValue = event.target.getAttribute('data-filter');
-      iso.arrange({ filter: filterValue });
-      
-      // Update active button state
-      const buttons = filtersElem.querySelectorAll('button');
-      buttons.forEach(btn => {
-          btn.classList.remove('is-checked', 'bg-indigo-600', 'text-white');
-          btn.classList.add('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
-      });
-      event.target.classList.add('is-checked', 'bg-indigo-600', 'text-white');
-      event.target.classList.remove('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
-
-    });
-
-    // Search Logic
-    const searchInput = document.getElementById('product-search');
-    let debounceTimer;
-    searchInput.addEventListener('keyup', () => {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-          const searchValue = searchInput.value.toLowerCase();
-          const activeFilter = filtersElem.querySelector('.is-checked').getAttribute('data-filter');
-          
-          iso.arrange({
-              filter: function(itemElem) {
-                  const name = itemElem.querySelector('h4').textContent.toLowerCase();
-                  const matchesSearch = name.includes(searchValue);
-                  const matchesFilter = activeFilter === '*' || itemElem.matches(activeFilter);
-                  return matchesSearch && matchesFilter;
-              }
-          });
-      }, 300);
-    });
-  }
+  }, 300);
 });
 </script>
 {% endblock %}

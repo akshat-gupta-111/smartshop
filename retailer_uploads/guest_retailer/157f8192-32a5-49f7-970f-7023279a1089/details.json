@@ -1,0 +1,20 @@
+{
+  "item_id": "157f8192-32a5-49f7-970f-7023279a1089",
+  "retailer": "guest_retailer",
+  "name": "Sony WH-1000XM5 Headphones",
+  "category": "electronics",
+  "description_full": "Industry-leading noise canceling wireless headphones with 30-hour battery life, crystal clear hands-free calling, and premium sound quality.",
+  "description_short": "Sony WH-1000XM5 noise canceling wireless headphones",
+  "price": 399.99,
+  "stock": 40,
+  "tags": [
+    "headphones",
+    "wireless",
+    "noise canceling",
+    "sony",
+    "audio"
+  ],
+  "created_at": "2025-08-21T01:53:01.010976Z",
+  "updated_at": "2025-08-21T01:53:01.010980Z",
+  "image_filename": "https://www.sony.com/image/5d02da5df552836db894cead8a5b4e9c?fmt=pjpeg&wid=660&bgcolor=FFFFFF&bgc=FFFFFF"
+}

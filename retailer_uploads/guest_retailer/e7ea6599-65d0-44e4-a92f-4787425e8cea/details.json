@@ -1,0 +1,20 @@
+{
+  "item_id": "e7ea6599-65d0-44e4-a92f-4787425e8cea",
+  "retailer": "guest_retailer",
+  "name": "Samsung 65\" 4K Smart TV",
+  "category": "electronics",
+  "description_full": "Crystal UHD 4K Smart TV with HDR, Crystal Processor 4K, and Tizen OS. Includes voice remote and streaming app support.",
+  "description_short": "Samsung 65-inch 4K Smart TV with Crystal UHD technology",
+  "price": 799.99,
+  "stock": 25,
+  "tags": [
+    "tv",
+    "smart tv",
+    "4k",
+    "samsung",
+    "electronics"
+  ],
+  "created_at": "2025-08-21T01:53:01.010216Z",
+  "updated_at": "2025-08-21T01:53:01.010220Z",
+  "image_filename": "https://images.samsung.com/is/image/samsung/p6pim/in/ua65cu7700ulxl/gallery/in-crystal-uhd-4k-smart-tv-cu7700-ua65cu7700ulxl-536973470?_519_PNG$"
+}

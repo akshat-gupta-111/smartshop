@@ -1,0 +1,20 @@
+{
+  "item_id": "9b7ea2d2-773c-459c-bc21-12a56cfe8a79",
+  "retailer": "guest_retailer",
+  "name": "LEGO Creator Expert Taj Mahal",
+  "category": "toys",
+  "description_full": "Detailed LEGO replica of the iconic Taj Mahal with over 5,900 pieces. Perfect for display and advanced builders.",
+  "description_short": "LEGO Creator Expert Taj Mahal building set",
+  "price": 369.99,
+  "stock": 15,
+  "tags": [
+    "lego",
+    "building",
+    "toys",
+    "taj mahal",
+    "collectible"
+  ],
+  "created_at": "2025-08-21T01:53:01.011649Z",
+  "updated_at": "2025-08-21T01:53:01.011653Z",
+  "image_filename": "https://www.lego.com/cdn/cs/set/assets/blt77c9b8b8c1b51b84/10256_alt1.jpg"
+}
