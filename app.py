@@ -47,12 +47,29 @@ if os.environ.get('VERCEL'):
     # In Vercel, only /tmp is writable
     DATA_DIR = Path("/tmp/data")
     UPLOAD_DIR = Path("/tmp/retailer_uploads")
+    
+    # Copy existing data from deployed folder to writable temp folder
+    SOURCE_DATA_DIR = Path(BASE_DIR) / "data"
+    SOURCE_UPLOAD_DIR = Path(BASE_DIR) / "retailer_uploads"
+    
+    # Copy data files if they exist
+    if SOURCE_DATA_DIR.exists() and not DATA_DIR.exists():
+        shutil.copytree(SOURCE_DATA_DIR, DATA_DIR)
+        print(f"Copied data from {SOURCE_DATA_DIR} to {DATA_DIR}")
+    
+    # Copy retailer uploads if they exist
+    if SOURCE_UPLOAD_DIR.exists() and not UPLOAD_DIR.exists():
+        shutil.copytree(SOURCE_UPLOAD_DIR, UPLOAD_DIR)
+        print(f"Copied retailer uploads from {SOURCE_UPLOAD_DIR} to {UPLOAD_DIR}")
 else:
     # Local development
     DATA_DIR = Path(BASE_DIR) / "data"
     UPLOAD_DIR = Path(BASE_DIR) / "retailer_uploads"
 
 DATA_DIR.mkdir(exist_ok=True)
+UPLOAD_DIR.mkdir(exist_ok=True)
+
+# File paths
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 AUTH_FILE = DATA_DIR / "Auth.json"
